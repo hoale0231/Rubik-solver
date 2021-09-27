@@ -70,7 +70,7 @@ class Rubik:
     
     # Make the state object comparable, it helps set(), PriorityQueue() to work correctly
     def __eq__(self, o: object) -> bool:
-        return self.cube == o.p and self.orie == o.o
+        return self.cube == o.cube and self.orie == o.orie
     def __gt__(self, o):
         return self.getHeuristic() > o.getHeuristic()
     def __lt__(self, o):
@@ -164,6 +164,7 @@ class Rubik:
 
     # Move and print each step
     def printEachStep(self, route: str):
+        print(self, '\n')
         for c in route:
             if c == 'U': self.U()
             elif c == 'u': self.u()
@@ -178,7 +179,8 @@ class Rubik:
             elif c == 'B': self.B()
             elif c == 'b': self.b()
             self.route += c
-            print(self)
+            print(c)
+            print(self, '\n')
 
 def A_star(initState: Rubik): 
     stateQueue = PriorityQueue()
@@ -257,7 +259,7 @@ def runN(n):
         init.moves(shuffle)
         
         s = time()
-        goal, nodeCreated, nodeVisited = A_star(init, PriorityQueue())
+        goal, nodeCreated, nodeVisited = A_star(init)
         e = time()
        
         if len(goal.route) > maxStep:
@@ -269,31 +271,28 @@ def runN(n):
         print("Node visited", nodeVisited)
         print("Node created:", nodeCreated)
         print(goal.route)
-        
+
     print("Max step:", maxStep)
     print("Case:", caseMax)
 
 # Try once with route designation
 def run1(str):
-    a = Rubik()
-    a.moves(str)
+    init = Rubik()
+    init.moves(str)
     s = time()
-    goal, nodeCreated, nodeVisited = A_star(a, PriorityQueue())
+    goal, nodeCreated, nodeVisited = A_star(init)
     e = time()
     print(e-s)
     print("Steps:", len(goal.route))
     print("Node visited:", nodeVisited)
     print("Node created:", nodeCreated)
     print(goal.route)
+    init.printEachStep(goal.route)
 
 
 if __name__ == '__main__':
-    a = Rubik()
-    a.moves("uLrlUFbbDudrl")
-    print(a)
-    goal, nodeCreated, nodeVisited = A_star(a, PriorityQueue())
-    input("Enter to continue")
-    a.printEachStep(goal.route)
+    #runN(100)
+    run1("uLrlUFbbDudrl")
   
     
 
