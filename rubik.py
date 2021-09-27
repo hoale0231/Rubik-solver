@@ -17,107 +17,126 @@ from os import system
         [4] [5]
            D
         [7] [6]
+
 Orientation:
     0: White, yellow are in face Up or Down
     1: White, yellow 
     2: White, yellow 
 '''
-
+# Indexing cubies
 ULB, URB, URF, ULF, DLF, DRF, DRB, DLB = 0, 1, 2, 3, 4, 5, 6, 7
+# Rubik's cube is solved if each sub-cubie is in the right place and their orientation is 0
 GOAL_POSITION = [ULB, URB, URF, ULF, DLF, DRF, DRB, DLB]
 GOAL_ORIENTATION = [0]*8
+# Color corresponding to each cubie
 COLOR = [['W', 'G', 'O'],['W', 'O', 'B'],['W', 'B', 'R'],['W', 'R', 'G'],['Y', 'G', 'R'],['Y', 'R', 'B'],['Y', 'B', 'O'],['Y', 'O', 'G']]
 
+# Pattern database, support heuristic function
 DB = json.load(open('db.json')) 
 
 class Rubik:
     def __init__(self, p = GOAL_POSITION, o = GOAL_ORIENTATION):
-        self.p = copy(p)
-        self.o = copy(o)
-        self.route = str()
-        self.heuristic = 0
+        self.cube = copy(p)     # Store cubie in order of position from 0 -> 7 according to the above convention
+        self.orie = copy(o)     # Store orientation of cubie in order of position from 0 -> 7 according to the above convention
+        self.route = str()      # Store moved steps
+        self.heuristic = 0      # Store heuristic value
 
+    # Copy constructor
+    def copy(self):
+        o = Rubik()
+        o.cube = copy(self.cube)
+        o.orie = copy(self.orie)
+        o.route = copy(self.route)
+        return o
+
+    # Check if rubik's cube solved
     def isGoalState(self):
-        return self.p == GOAL_POSITION and self.o == GOAL_ORIENTATION
+        return self.cube == GOAL_POSITION and self.orie == GOAL_ORIENTATION
     
-    def isGoalHeuristic(self, index):
-        return self.p[index] == index and self.o[index] == 0
+    # Check if a sub-cube is correct position and orientation. It's help calc heuristic value
+    def isCorrectPositionCube(self, index):
+        return self.cube[index] == index and self.orie[index] == 0
 
+    # Calc heuristic value of current state
     def getHeuristic(self):
         if self.heuristic == 0: 
             # self.heuristic = sum([o != 0 for o in self.o]) + sum([i != self.p[i] for i in range(8)]) / 4 + len(self.route)
-            self.heuristic = sum([DB[self.p[i]][str(self.o[i]*10+i)] for i in range(8)]) / 4 + len(self.route)
+            self.heuristic = sum([DB[self.cube[i]][str(self.orie[i]*10+i)] for i in range(8)]) / 4 + len(self.route)
         return self.heuristic
 
-    def __hash__(self) -> int:
-        return hash((tuple(self.p), tuple(self.o)))
+    # Make the position object hashable, i.e. addable to set()
+    def __hash__(self):
+        return hash((tuple(self.cube), tuple(self.orie)))
     
+    # Make the state object comparable, it helps set(), PriorityQueue() to work correctly
     def __eq__(self, o: object) -> bool:
-        return self.p == o.p and self.o == o.o
-
+        return self.cube == o.p and self.orie == o.o
     def __gt__(self, o):
         return self.getHeuristic() > o.getHeuristic()
-
     def __lt__(self, o):
         return self.getHeuristic() < o.getHeuristic()
 
+    # Print current state
     def __repr__(self):
-        s = f"   {COLOR[self.p[0]][self.o[0]]}{COLOR[self.p[1]][self.o[1]]}\n"
-        s += f"   {COLOR[self.p[3]][self.o[3]]}{COLOR[self.p[2]][self.o[2]]}\n"
-        s += f"{COLOR[self.p[0]][self.o[0] - 2]}{COLOR[self.p[3]][self.o[3] - 1]} {COLOR[self.p[3]][self.o[3] - 2]}{COLOR[self.p[2]][self.o[2] - 1]} {COLOR[self.p[2]][self.o[2] - 2]}{COLOR[self.p[1]][self.o[1] - 1]} {COLOR[self.p[1]][self.o[1] - 2]}{COLOR[self.p[0]][self.o[0] - 1]}\n"
-        s += f"{COLOR[self.p[7]][self.o[7] - 1]}{COLOR[self.p[4]][self.o[4] - 2]} {COLOR[self.p[4]][self.o[4] - 1]}{COLOR[self.p[5]][self.o[5] - 2]} {COLOR[self.p[5]][self.o[5] - 1]}{COLOR[self.p[6]][self.o[6] - 2]} {COLOR[self.p[6]][self.o[6] - 1]}{COLOR[self.p[7]][self.o[7] - 2]}\n"
-        s += f"   {COLOR[self.p[4]][self.o[4]]}{COLOR[self.p[5]][self.o[5]]}\n"
-        s += f"   {COLOR[self.p[7]][self.o[7]]}{COLOR[self.p[6]][self.o[6]]}"
+        s = f"   {COLOR[self.cube[0]][self.orie[0]]}{COLOR[self.cube[1]][self.orie[1]]}\n"
+        s += f"   {COLOR[self.cube[3]][self.orie[3]]}{COLOR[self.cube[2]][self.orie[2]]}\n"
+        s += f"{COLOR[self.cube[0]][self.orie[0] - 2]}{COLOR[self.cube[3]][self.orie[3] - 1]} {COLOR[self.cube[3]][self.orie[3] - 2]}{COLOR[self.cube[2]][self.orie[2] - 1]} {COLOR[self.cube[2]][self.orie[2] - 2]}{COLOR[self.cube[1]][self.orie[1] - 1]} {COLOR[self.cube[1]][self.orie[1] - 2]}{COLOR[self.cube[0]][self.orie[0] - 1]}\n"
+        s += f"{COLOR[self.cube[7]][self.orie[7] - 1]}{COLOR[self.cube[4]][self.orie[4] - 2]} {COLOR[self.cube[4]][self.orie[4] - 1]}{COLOR[self.cube[5]][self.orie[5] - 2]} {COLOR[self.cube[5]][self.orie[5] - 1]}{COLOR[self.cube[6]][self.orie[6] - 2]} {COLOR[self.cube[6]][self.orie[6] - 1]}{COLOR[self.cube[7]][self.orie[7] - 2]}\n"
+        s += f"   {COLOR[self.cube[4]][self.orie[4]]}{COLOR[self.cube[5]][self.orie[5]]}\n"
+        s += f"   {COLOR[self.cube[7]][self.orie[7]]}{COLOR[self.cube[6]][self.orie[6]]}"
         return s
 
+    # Legal moves: U, u ~ u', D, d, R, r, L, l, F, f, B, b
+    # They rotate a face of rubik's cube, include: swap positions of cubie and set cubie's orientation after rotate. 
     def U(self):
-        self.p[ULB], self.p[URB], self.p[URF], self.p[ULF] = self.p[ULF], self.p[ULB], self.p[URB], self.p[URF]
-        self.o[ULB], self.o[URB], self.o[URF], self.o[ULF] = self.o[ULF], self.o[ULB], self.o[URB], self.o[URF]
+        self.cube[ULB], self.cube[URB], self.cube[URF], self.cube[ULF] = self.cube[ULF], self.cube[ULB], self.cube[URB], self.cube[URF]
+        self.orie[ULB], self.orie[URB], self.orie[URF], self.orie[ULF] = self.orie[ULF], self.orie[ULB], self.orie[URB], self.orie[URF]
 
     def u(self):
-        self.p[ULB], self.p[URB], self.p[URF], self.p[ULF] = self.p[URB], self.p[URF], self.p[ULF], self.p[ULB]
-        self.o[ULB], self.o[URB], self.o[URF], self.o[ULF] = self.o[URB], self.o[URF], self.o[ULF], self.o[ULB]
+        self.cube[ULB], self.cube[URB], self.cube[URF], self.cube[ULF] = self.cube[URB], self.cube[URF], self.cube[ULF], self.cube[ULB]
+        self.orie[ULB], self.orie[URB], self.orie[URF], self.orie[ULF] = self.orie[URB], self.orie[URF], self.orie[ULF], self.orie[ULB]
 
     def D(self):
-        self.p[DLB], self.p[DRB], self.p[DRF], self.p[DLF] = self.p[DRB], self.p[DRF], self.p[DLF], self.p[DLB]
-        self.o[DLB], self.o[DRB], self.o[DRF], self.o[DLF] = self.o[DRB], self.o[DRF], self.o[DLF], self.o[DLB]
+        self.cube[DLB], self.cube[DRB], self.cube[DRF], self.cube[DLF] = self.cube[DRB], self.cube[DRF], self.cube[DLF], self.cube[DLB]
+        self.orie[DLB], self.orie[DRB], self.orie[DRF], self.orie[DLF] = self.orie[DRB], self.orie[DRF], self.orie[DLF], self.orie[DLB]
 
     def d(self):
-        self.p[DLB], self.p[DRB], self.p[DRF], self.p[DLF] = self.p[DLF], self.p[DLB], self.p[DRB], self.p[DRF]
-        self.o[DLB], self.o[DRB], self.o[DRF], self.o[DLF] = self.o[DLF], self.o[DLB], self.o[DRB], self.o[DRF]
+        self.cube[DLB], self.cube[DRB], self.cube[DRF], self.cube[DLF] = self.cube[DLF], self.cube[DLB], self.cube[DRB], self.cube[DRF]
+        self.orie[DLB], self.orie[DRB], self.orie[DRF], self.orie[DLF] = self.orie[DLF], self.orie[DLB], self.orie[DRB], self.orie[DRF]
 
     def R(self):
-        self.p[URF], self.p[URB], self.p[DRB], self.p[DRF] = self.p[DRF], self.p[URF], self.p[URB], self.p[DRB]
-        self.o[URF], self.o[URB], self.o[DRB], self.o[DRF] = (self.o[DRF] + 1) % 3, (self.o[URF] + 2) % 3, (self.o[URB] + 1) % 3, (self.o[DRB] + 2) % 3
+        self.cube[URF], self.cube[URB], self.cube[DRB], self.cube[DRF] = self.cube[DRF], self.cube[URF], self.cube[URB], self.cube[DRB]
+        self.orie[URF], self.orie[URB], self.orie[DRB], self.orie[DRF] = (self.orie[DRF] + 1) % 3, (self.orie[URF] + 2) % 3, (self.orie[URB] + 1) % 3, (self.orie[DRB] + 2) % 3
 
     def r(self):
-        self.p[URF], self.p[URB], self.p[DRB], self.p[DRF] = self.p[URB], self.p[DRB], self.p[DRF], self.p[URF]
-        self.o[URF], self.o[URB], self.o[DRB], self.o[DRF] = (self.o[URB] + 1) % 3, (self.o[DRB] + 2) % 3, (self.o[DRF] + 1) % 3, (self.o[URF] + 2) % 3
+        self.cube[URF], self.cube[URB], self.cube[DRB], self.cube[DRF] = self.cube[URB], self.cube[DRB], self.cube[DRF], self.cube[URF]
+        self.orie[URF], self.orie[URB], self.orie[DRB], self.orie[DRF] = (self.orie[URB] + 1) % 3, (self.orie[DRB] + 2) % 3, (self.orie[DRF] + 1) % 3, (self.orie[URF] + 2) % 3
     
     def L(self):
-        self.p[ULF], self.p[ULB], self.p[DLB], self.p[DLF] = self.p[ULB], self.p[DLB], self.p[DLF], self.p[ULF]
-        self.o[ULF], self.o[ULB], self.o[DLB], self.o[DLF] = (self.o[ULB] + 2) % 3, (self.o[DLB] + 1) % 3, (self.o[DLF] + 2) % 3, (self.o[ULF] + 1) % 3
+        self.cube[ULF], self.cube[ULB], self.cube[DLB], self.cube[DLF] = self.cube[ULB], self.cube[DLB], self.cube[DLF], self.cube[ULF]
+        self.orie[ULF], self.orie[ULB], self.orie[DLB], self.orie[DLF] = (self.orie[ULB] + 2) % 3, (self.orie[DLB] + 1) % 3, (self.orie[DLF] + 2) % 3, (self.orie[ULF] + 1) % 3
 
     def l(self):
-        self.p[ULF], self.p[ULB], self.p[DLB], self.p[DLF] = self.p[DLF], self.p[ULF], self.p[ULB], self.p[DLB]
-        self.o[ULF], self.o[ULB], self.o[DLB], self.o[DLF] = (self.o[DLF] + 2) % 3, (self.o[ULF] + 1) % 3, (self.o[ULB] + 2) % 3, (self.o[DLB] + 1) % 3
+        self.cube[ULF], self.cube[ULB], self.cube[DLB], self.cube[DLF] = self.cube[DLF], self.cube[ULF], self.cube[ULB], self.cube[DLB]
+        self.orie[ULF], self.orie[ULB], self.orie[DLB], self.orie[DLF] = (self.orie[DLF] + 2) % 3, (self.orie[ULF] + 1) % 3, (self.orie[ULB] + 2) % 3, (self.orie[DLB] + 1) % 3
 
     def F(self):
-        self.p[ULF], self.p[URF], self.p[DRF], self.p[DLF] = self.p[DLF], self.p[ULF], self.p[URF], self.p[DRF]
-        self.o[ULF], self.o[URF], self.o[DRF], self.o[DLF] = (self.o[DLF] + 1) % 3, (self.o[ULF] + 2) % 3, (self.o[URF] + 1) % 3, (self.o[DRF] + 2) % 3
+        self.cube[ULF], self.cube[URF], self.cube[DRF], self.cube[DLF] = self.cube[DLF], self.cube[ULF], self.cube[URF], self.cube[DRF]
+        self.orie[ULF], self.orie[URF], self.orie[DRF], self.orie[DLF] = (self.orie[DLF] + 1) % 3, (self.orie[ULF] + 2) % 3, (self.orie[URF] + 1) % 3, (self.orie[DRF] + 2) % 3
     
     def f(self):
-        self.p[ULF], self.p[URF], self.p[DRF], self.p[DLF] = self.p[URF], self.p[DRF], self.p[DLF], self.p[ULF]
-        self.o[ULF], self.o[URF], self.o[DRF], self.o[DLF] = (self.o[URF] + 1) % 3, (self.o[DRF] + 2) % 3, (self.o[DLF] + 1) % 3, (self.o[ULF] + 2) % 3
+        self.cube[ULF], self.cube[URF], self.cube[DRF], self.cube[DLF] = self.cube[URF], self.cube[DRF], self.cube[DLF], self.cube[ULF]
+        self.orie[ULF], self.orie[URF], self.orie[DRF], self.orie[DLF] = (self.orie[URF] + 1) % 3, (self.orie[DRF] + 2) % 3, (self.orie[DLF] + 1) % 3, (self.orie[ULF] + 2) % 3
 
     def B(self):
-        self.p[ULB], self.p[URB], self.p[DRB], self.p[DLB] = self.p[URB], self.p[DRB], self.p[DLB], self.p[ULB]
-        self.o[ULB], self.o[URB], self.o[DRB], self.o[DLB] = (self.o[URB] + 2) % 3, (self.o[DRB] + 1) % 3, (self.o[DLB] + 2) % 3, (self.o[ULB] + 1) % 3
+        self.cube[ULB], self.cube[URB], self.cube[DRB], self.cube[DLB] = self.cube[URB], self.cube[DRB], self.cube[DLB], self.cube[ULB]
+        self.orie[ULB], self.orie[URB], self.orie[DRB], self.orie[DLB] = (self.orie[URB] + 2) % 3, (self.orie[DRB] + 1) % 3, (self.orie[DLB] + 2) % 3, (self.orie[ULB] + 1) % 3
 
     def b(self):
-        self.p[ULB], self.p[URB], self.p[DRB], self.p[DLB] = self.p[DLB], self.p[ULB], self.p[URB], self.p[DRB]
-        self.o[ULB], self.o[URB], self.o[DRB], self.o[DLB] = (self.o[DLB] + 2) % 3, (self.o[ULB] + 1) % 3, (self.o[URB] + 2) % 3, (self.o[DRB] + 1) % 3
+        self.cube[ULB], self.cube[URB], self.cube[DRB], self.cube[DLB] = self.cube[DLB], self.cube[ULB], self.cube[URB], self.cube[DRB]
+        self.orie[ULB], self.orie[URB], self.orie[DRB], self.orie[DLB] = (self.orie[DLB] + 2) % 3, (self.orie[ULB] + 1) % 3, (self.orie[URB] + 2) % 3, (self.orie[DRB] + 1) % 3
 
+    # Help function - moves multi step
     def moves(self, route: str):
         for c in route:
             if c == 'U': self.U()
@@ -134,7 +153,17 @@ class Rubik:
             elif c == 'b': self.b()
             self.route += c
     
-    def printSolution(self, route: str):
+    # Get all child state of current state
+    def getChildStates(self):
+        states = []
+        for c in "UuDdRrLlFfBb":
+            copy = self.copy()
+            copy.moves(c)
+            states.append(copy)
+        return states
+
+    # Move and print each step
+    def printEachStep(self, route: str):
         for c in route:
             if c == 'U': self.U()
             elif c == 'u': self.u()
@@ -149,28 +178,10 @@ class Rubik:
             elif c == 'B': self.B()
             elif c == 'b': self.b()
             self.route += c
-            sleep(0.5)
-            system('cls')
             print(self)
-        
-    
-    def getChildStates(self):
-        states = []
-        for c in "UuDdRrLlFfBb":
-            copy = self.copy()
-            copy.moves(c)
-            states.append(copy)
-        return states
 
-    def copy(self):
-        o = Rubik()
-        o.p = copy(self.p)
-        o.o = copy(self.o)
-        o.route = copy(self.route)
-        return o
-
-def Search(initState: Rubik, queue: Queue): 
-    stateQueue = queue
+def A_star(initState: Rubik): 
+    stateQueue = PriorityQueue()
     visited = set()
     stateQueue.put(initState)
     visited.add(initState)
@@ -189,13 +200,14 @@ def Search(initState: Rubik, queue: Queue):
                 visited.add(nextState) 
     return None
 
+# Use to calc heuristic value
 def BFS(initState: Rubik, index): 
     stateQueue = Queue()
     visited = set()
     stateQueue.put(initState)
     visited.add(initState)
     initState.route = ""
-    if initState.isGoalHeuristic(index):
+    if initState.isCorrectPositionCube(index):
         return initState
     while not stateQueue.empty():
         state = stateQueue.get() 
@@ -207,6 +219,7 @@ def BFS(initState: Rubik, index):
                 visited.add(nextState) 
     return None
 
+# Create pattern database
 def creatDB():
     db = []
     for i in range(8):
@@ -222,8 +235,7 @@ def creatDB():
                 db[i][o * 10 + p] = len(BFS(init, i).route)
     json.dump(db, open('db.json', 'w'))
 
-
-
+# Use to test algorithm
 def randomMove(n):
     S = "UuDdRrLlFfBb"
     s = ""
@@ -231,6 +243,7 @@ def randomMove(n):
         s += S[random.randrange(12)]
     return s
 
+# Randomly run N times
 def runN(n):
     maxStep = 0
     caseMax = ""
@@ -244,25 +257,28 @@ def runN(n):
         init.moves(shuffle)
         
         s = time()
-        goal, nodeCreated, nodeVisited = Search(init, PriorityQueue())
+        goal, nodeCreated, nodeVisited = A_star(init, PriorityQueue())
         e = time()
        
         if len(goal.route) > maxStep:
             maxStep = len(goal.route)
             caseMax = shuffle
+
         print("Time:", e - s)
         print("Steps:", len(goal.route))
         print("Node visited", nodeVisited)
         print("Node created:", nodeCreated)
         print(goal.route)
+        
     print("Max step:", maxStep)
     print("Case:", caseMax)
 
+# Try once with route designation
 def run1(str):
     a = Rubik()
     a.moves(str)
     s = time()
-    goal, nodeCreated, nodeVisited = Search(a, PriorityQueue())
+    goal, nodeCreated, nodeVisited = A_star(a, PriorityQueue())
     e = time()
     print(e-s)
     print("Steps:", len(goal.route))
@@ -275,9 +291,9 @@ if __name__ == '__main__':
     a = Rubik()
     a.moves("uLrlUFbbDudrl")
     print(a)
-    goal, nodeCreated, nodeVisited = Search(a, PriorityQueue())
+    goal, nodeCreated, nodeVisited = A_star(a, PriorityQueue())
     input("Enter to continue")
-    a.printSolution(goal.route)
+    a.printEachStep(goal.route)
   
     
 
