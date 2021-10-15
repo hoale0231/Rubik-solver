@@ -1,9 +1,7 @@
-from copy import copy
-from time import sleep, time
-from queue import Queue, PriorityQueue
-import random
+from copy import copy, deepcopy
+from queue import Queue
 import json
-from os import system
+import random
 
 '''
         [0] [1]
@@ -29,9 +27,8 @@ ULB, URB, URF, ULF, DLF, DRF, DRB, DLB = 0, 1, 2, 3, 4, 5, 6, 7
 GOAL_POSITION = [ULB, URB, URF, ULF, DLF, DRF, DRB, DLB]
 GOAL_ORIENTATION = [0]*8
 # Color corresponding to each cubie
-COLOR = [['W', 'G', 'O'],['W', 'O', 'B'],['W', 'B', 'R'],['W', 'R', 'G'],['Y', 'G', 'R'],['Y', 'R', 'B'],['Y', 'B', 'O'],['Y', 'O', 'G']]
+COLOR = [['w', 'g', 'o'],['w', 'o', 'b'],['w', 'b', 'r'],['w', 'r', 'g'],['y', 'g', 'r'],['y', 'r', 'b'],['y', 'b', 'o'],['y', 'o', 'g']]
 
-# Pattern database, support heuristic function
 DB = json.load(open('db.json')) 
 
 class Rubik:
@@ -44,8 +41,8 @@ class Rubik:
     # Copy constructor
     def copy(self):
         o = Rubik()
-        o.cube = copy(self.cube)
-        o.orie = copy(self.orie)
+        o.cube  = copy(self.cube)
+        o.orie  = copy(self.orie)
         o.route = copy(self.route)
         return o
 
@@ -60,7 +57,7 @@ class Rubik:
     # Calc heuristic value of current state
     def getHeuristic(self):
         if self.heuristic == 0: 
-            # self.heuristic = sum([o != 0 for o in self.o]) + sum([i != self.p[i] for i in range(8)]) / 4 + len(self.route)
+            # self.heuristic = (sum([o != 0 for o in self.o]) + sum([i != self.p[i] for i in range(8)])) / 4 + len(self.route)
             self.heuristic = sum([DB[self.cube[i]][str(self.orie[i]*10+i)] for i in range(8)]) / 4 + len(self.route)
         return self.heuristic
 
@@ -75,6 +72,20 @@ class Rubik:
         return self.getHeuristic() > o.getHeuristic()
     def __lt__(self, o):
         return self.getHeuristic() < o.getHeuristic()
+
+    def getFaceColor(self, face):
+        if face == 'U':
+            return [COLOR[self.cube[0]][self.orie[0]], COLOR[self.cube[1]][self.orie[1]], COLOR[self.cube[3]][self.orie[3]], COLOR[self.cube[2]][self.orie[2]]]
+        if face == 'L':
+            return [COLOR[self.cube[0]][self.orie[0] - 2], COLOR[self.cube[3]][self.orie[3] - 1], COLOR[self.cube[7]][self.orie[7] - 1], COLOR[self.cube[4]][self.orie[4] - 2]]
+        if face == 'F':
+            return [COLOR[self.cube[3]][self.orie[3] - 2], COLOR[self.cube[2]][self.orie[2] - 1], COLOR[self.cube[4]][self.orie[4] - 1], COLOR[self.cube[5]][self.orie[5] - 2]]
+        if face == 'R':
+            return [COLOR[self.cube[2]][self.orie[2] - 2], COLOR[self.cube[1]][self.orie[1] - 1], COLOR[self.cube[5]][self.orie[5] - 1], COLOR[self.cube[6]][self.orie[6] - 2]]
+        if face == 'B':
+            return [COLOR[self.cube[1]][self.orie[1] - 2], COLOR[self.cube[0]][self.orie[0] - 1], COLOR[self.cube[6]][self.orie[6] - 1], COLOR[self.cube[7]][self.orie[7] - 2]]
+        if face == 'D':
+            return [COLOR[self.cube[4]][self.orie[4]], COLOR[self.cube[5]][self.orie[5]], COLOR[self.cube[7]][self.orie[7]], COLOR[self.cube[6]][self.orie[6]]]
 
     # Print current state
     def __repr__(self):
@@ -156,7 +167,15 @@ class Rubik:
     # Get all child state of current state
     def getChildStates(self):
         states = []
-        for c in "UuDdRrLlFfBb":
+        for c in "UuFfRr":
+            copy = self.copy()
+            copy.moves(c)
+            states.append(copy)
+        return states
+
+    def getFullChild(self):
+        states = []
+        for c in "UuFfRrDdBbLl":
             copy = self.copy()
             copy.moves(c)
             states.append(copy)
@@ -182,117 +201,36 @@ class Rubik:
             print(c)
             print(self, '\n')
 
-def A_star(initState: Rubik): 
-    stateQueue = PriorityQueue()
-    visited = set()
-    stateQueue.put(initState)
-    visited.add(initState)
-    initState.route = ""
-    cnt = 0
-    if initState.isGoalState():
-        return initState, len(visited), cnt
-    while not stateQueue.empty():
-        state: Rubik = stateQueue.get() 
-        for nextState in state.getChildStates():
-            cnt += 1
-            if nextState not in visited:
-                if nextState.isGoalState():
-                    return nextState, cnt, len(visited)
-                stateQueue.put(nextState)
-                visited.add(nextState) 
-    return None
+    def routeTransformToStandard(self): 
+        stateQueue = Queue()
+        visited = set()
+        initState = deepcopy(self)
+        stateQueue.put(initState)
+        visited.add(initState)
+        initState.route = ""
+        if initState.isCorrectPositionCube(DLB):
+            return initState.route
+        while not stateQueue.empty():
+            state = stateQueue.get() 
+            for nextState in state.getFullChild():
+                if nextState not in visited:
+                    if nextState.isCorrectPositionCube(DLB):
+                        return nextState.route
+                    stateQueue.put(nextState)
+                    visited.add(nextState) 
+        return None
 
-# Use to calc heuristic value
-def BFS(initState: Rubik, index): 
-    stateQueue = Queue()
-    visited = set()
-    stateQueue.put(initState)
-    visited.add(initState)
-    initState.route = ""
-    if initState.isCorrectPositionCube(index):
-        return initState
-    while not stateQueue.empty():
-        state = stateQueue.get() 
-        for nextState in state.getChildStates():
-            if nextState not in visited:
-                if nextState.isGoalHeuristic(index):
-                    return nextState
-                stateQueue.put(nextState)
-                visited.add(nextState) 
-    return None
+    def transformToStandard(self):
+        route = self.routeTransformToStandard()
+        follow = {'U':'d', 'u':'D', 'D':'u', 'd':'U', 'F':'b', 'f':'B', 'B':'f', 'b':'F', 'R':'l', 'r':'L', 'L':'r', 'l':'R'}
+        moves = ""
+        for move in route:
+            moves += move
+            moves += follow[move]
+        self.moves(moves)
 
-# Create pattern database
-def creatDB():
-    db = []
-    for i in range(8):
-        db.append(dict())
-        for o in range(3):
-            for p in range(8):
-                init = Rubik()
-                ps = [-1]*8
-                os = [0]*8
-                ps[p] = i
-                os[p] = o
-                init.init(ps, os)
-                db[i][o * 10 + p] = len(BFS(init, i).route)
-    json.dump(db, open('db.json', 'w'))
-
-# Use to test algorithm
-def randomMove(n):
-    S = "UuDdRrLlFfBb"
-    s = ""
-    for i in range(n):
-        s += S[random.randrange(12)]
-    return s
-
-# Randomly run N times
-def runN(n):
-    maxStep = 0
-    caseMax = ""
-    for i in range(n):
-        init = Rubik()
-        shuffle = randomMove(i)
-
-        print("===========================")
-        print("N move:", i)
-        print(shuffle)
-        init.moves(shuffle)
-        
-        s = time()
-        goal, nodeCreated, nodeVisited = A_star(init)
-        e = time()
-       
-        if len(goal.route) > maxStep:
-            maxStep = len(goal.route)
-            caseMax = shuffle
-
-        print("Time:", e - s)
-        print("Steps:", len(goal.route))
-        print("Node visited", nodeVisited)
-        print("Node created:", nodeCreated)
-        print(goal.route)
-
-    print("Max step:", maxStep)
-    print("Case:", caseMax)
-
-# Try once with route designation
-def run1(str):
-    init = Rubik()
-    init.moves(str)
-    s = time()
-    goal, nodeCreated, nodeVisited = A_star(init)
-    e = time()
-    print(e-s)
-    print("Steps:", len(goal.route))
-    print("Node visited:", nodeVisited)
-    print("Node created:", nodeCreated)
-    print(goal.route)
-    init.printEachStep(goal.route)
-
-
-if __name__ == '__main__':
-    #runN(100)
-    run1("uLrlUFbbDudrl")
-  
-    
+    def randomFace(self, n):
+        S = "UuDdRrLlFfBb"
+        for i in range(n):
+            self.moves(S[random.randrange(12)])
 
