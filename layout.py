@@ -350,11 +350,11 @@ class Ui_MainWindow(object):
     
 
     def solve(self):
-        route, created, visited = self.cube.solve()
+        goal, created, visited = self.cube.solve()
         textRoute = ""
         self.solution = []
         self.currStep = 0
-        for c in route:
+        for c in goal.route:
             if c.islower():
                 textRoute += c.upper() + '\''
             else:

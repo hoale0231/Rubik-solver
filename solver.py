@@ -149,6 +149,7 @@ def run1(str, mode):
     #init.transformToStandard()
     s = time()
     goal, nodeCreated, nodeVisited = A_star(init, mode)
+    print(goal.getHeuristic())
     e = time()
     print(e-s)
     print("Steps:", len(goal.route))
@@ -159,6 +160,6 @@ def run1(str, mode):
 
 
 if __name__ == '__main__':
-    run1("DrUFDRLrfuDFu")
+    run1("DrUFDRLrfuDFu", 2)
     #runN(50)
     #createDB2()
