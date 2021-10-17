@@ -2,8 +2,6 @@ from copy import copy, deepcopy
 from queue import Queue
 import json
 import random
-from typing_extensions import ParamSpec
-
 '''
         [0] [1]
            U
