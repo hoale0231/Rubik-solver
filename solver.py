@@ -100,7 +100,7 @@ def createDB2():
                             init = Rubik(ps, os)
                             new_state = BFS2(init, c[0], c[1])
                             db[c[0]][c[1]][o1*1000+p1*100+o2*10+p2] = len(new_state.route)
-                            
+
     json.dump(db, open('dbPair.json', 'w'))
     
 # Use to test algorithm
@@ -158,6 +158,6 @@ def run1(str):
 
 
 if __name__ == '__main__':
-    #run1("DrUFDRLrfuDFu")
+    run1("DrUFDRLrfuDFu")
     #runN(50)
-    createDB2()
+    #createDB2()

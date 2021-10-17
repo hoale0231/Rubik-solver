@@ -82,9 +82,9 @@ class Rubik:
     def __eq__(self, o: object) -> bool:
         return self.cube == o.cube and self.orie == o.orie
     def __gt__(self, o):
-        return self.getHeuristic() > o.getHeuristic()
+        return self.getHeuristic2() > o.getHeuristic2()
     def __lt__(self, o):
-        return self.getHeuristic() < o.getHeuristic()
+        return self.getHeuristic2() < o.getHeuristic2()
 
     def getFaceColor(self, face):
         if face == 'U':
