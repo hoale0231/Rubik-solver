@@ -32,9 +32,9 @@ COLOR = [['w', 'g', 'o'],['w', 'o', 'b'],['w', 'b', 'r'],['w', 'r', 'g'],['y', '
 DB = json.load(open('db.json')) 
 
 class Rubik:
-    def __init__(self, p = GOAL_POSITION, o = GOAL_ORIENTATION):
-        self.cube = copy(p)     # Store cubie in order of position from 0 -> 7 according to the above convention
-        self.orie = copy(o)     # Store orientation of cubie in order of position from 0 -> 7 according to the above convention
+    def __init__(self, cubde = GOAL_POSITION, orie = GOAL_ORIENTATION):
+        self.cube = copy(cubde)     # Store cubie in order of position from 0 -> 7 according to the above convention
+        self.orie = copy(orie)     # Store orientation of cubie in order of position from 0 -> 7 according to the above convention
         self.route = str()      # Store moved steps
         self.heuristic = 0      # Store heuristic value
 

@@ -97,6 +97,7 @@ class RubikCube:
         self.face_color['D'] = [hex2rgb[f] for f in self.rubik.getFaceColor('D')]
 
     def randomFace(self):
+        self.rubik = Rubik()
         self.rubik.randomFace(5)
         self.get_face_color()
 
@@ -107,8 +108,9 @@ class RubikCube:
     def solve(self):
         return A_star(deepcopy(self.rubik))
 
-    def nextStep(self):
-        pass
+    def nextStep(self, move):
+        self.rubik.moves(move)
+        self.get_face_color()
 
 class my3DCanvas(FigureCanvas):
     '''Ultimately, this is a QWidget (as well as a FigureCanvasAgg, etc.).'''
@@ -170,7 +172,7 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         self.cube = RubikCube()
         self.solution = []
-
+        self.currStep = 0
         MainWindow.setObjectName('MainWindow')
         MainWindow.resize(800, 600)
         MainWindow.setStyleSheet('background-color: rgb(245, 245, 245);')
@@ -304,7 +306,8 @@ class Ui_MainWindow(object):
                                         'color: black;\n'
                                         'background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(245, 245, 245), stop: 1 rgb(245, 245, 245));')
         self.pushButton_4.setObjectName('pushButton_4')
-
+        
+        self.cube.rotate(1.5, 0, 0)
         font = QtGui.QFont()
         font.setFamily('Apple SD Gothic Neo')
         font.setPointSize(30)
@@ -349,20 +352,25 @@ class Ui_MainWindow(object):
     def solve(self):
         route, created, visited = self.cube.solve()
         textRoute = ""
+        self.solution = []
+        self.currStep = 0
         for c in route:
             if c.islower():
                 textRoute += c.upper() + '\''
             else:
                 textRoute += c
             textRoute += ' '
+            self.solution.append(c)
         self.my2DCanvas.textOutput(textRoute)
         #self.myMplCanvas.updateMpl(self.cube)
-        
 
     def randomFace(self):
         self.cube.randomFace()
         self.myMplCanvas.updateMpl(self.cube)
 
     def solve_step(self):
-        self.cube.nextStep()
-        self.myMplCanvas.updateMpl(self.cube)
+        if self.currStep < len(self.solution):
+            self.cube.nextStep(self.solution[self.currStep])
+            self.currStep += 1
+            print(self.currStep)
+            self.myMplCanvas.updateMpl(self.cube)
