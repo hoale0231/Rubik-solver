@@ -98,8 +98,8 @@ class RubikCube:
 
     def randomFace(self):
         self.rubik = Rubik()
-        self.rubik.moves("lffFLffl")
-        #self.rubik.randomFace(10)
+        #self.rubik.moves("lffFLffl")
+        self.rubik.randomFace(20)
         self.get_face_color()
 
     def resetFace(self):
@@ -350,7 +350,6 @@ class Ui_MainWindow(object):
         self.cube.resetFace()
         self.myMplCanvas.updateMpl(self.cube)
     
-
     def solve2(self):
         self.printSolution(self.cube.solve(0))
 

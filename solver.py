@@ -7,11 +7,10 @@ from rubik import Rubik, PAIR_CUBES, translateMove
 # Pattern database, support heuristic function
 
 
-def A_star(initState: Rubik, mode = 3): 
+def A_star(initState: Rubik, mode = 2): 
     Rubik.mode = mode
     routeTranform = ""
-    if mode == 3:
-        routeTranform = initState.transformToStandard()
+    routeTranform = initState.transformToStandard()
     stateQueue = PriorityQueue()
     visited = set()
     stateQueue.put(initState)
@@ -26,8 +25,7 @@ def A_star(initState: Rubik, mode = 3):
             cnt += 1
             if nextState not in visited:
                 if nextState.isGoalState():
-                    if mode == 3:
-                        nextState.route = translateMove(routeTranform, nextState.route)
+                    nextState.route = translateMove(routeTranform, nextState.route)
                     return nextState, cnt, len(visited)
                 stateQueue.put(nextState)
                 visited.add(nextState) 

@@ -67,7 +67,7 @@ class Rubik:
         if self.heuristic == 0: 
             if self.mode == 0:
                 self.heuristic = (sum([o != 0 for o in self.orie]) + sum([i != self.cube[i] for i in range(8)])) / 4 + len(self.route)
-            if self.mode == 1 or self.mode == 3:
+            if self.mode == 1:
                 self.heuristic = sum([DB[self.cube[i]][str(self.orie[i]*10+i)] for i in range(8)]) /4 + len(self.route)
             if self.mode == 2:
                 pos_cubes = [-1]*8 # Record position of each cube in current state
@@ -187,7 +187,7 @@ class Rubik:
     # Get all child state of current state
     def getChildStates(self):
         states = []
-        legalMoves = "UuFfRr" if self.mode == 3 else"UuFfRrDdBbLl"
+        legalMoves = "UuFfRr"
         for c in legalMoves:
             copy = self.copy()
             copy.moves(c)
@@ -353,9 +353,9 @@ translate = {
         'r' : 'r',
         'L' : 'L',
         'F' : 'D',
-        'b' : 'f',
+        'b' : 'u',
         'f' : 'd',
-        'B' : 'F'
+        'B' : 'U'
     },
     'l' : {
         'U' : 'F',
@@ -367,9 +367,9 @@ translate = {
         'r' : 'r',
         'L' : 'L',
         'F' : 'D',
-        'b' : 'f',
+        'b' : 'u',
         'f' : 'd',
-        'B' : 'F'
+        'B' : 'U'
     },
     'f' : {
         'U' : 'R',
@@ -434,4 +434,5 @@ def translateMove(tranform: str, moves: str):
     for t in tranform[::-1]:
         for i in range(len(result)): 
             result[i] = translate[t][result[i]]
+    a = int()
     return ''.join(result)
