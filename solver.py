@@ -56,7 +56,7 @@ def BFS2(initState: Rubik, index1, index2):
         return initState
     while not stateQueue.empty():
         state = stateQueue.get() 
-        for nextState in state.getChildStates():
+        for nextState in state.getFullChild():
             if nextState not in visited:
                 if nextState.isCorrectPositionCube(index1) and nextState.isCorrectPositionCube(index2):
                     return nextState
@@ -84,6 +84,7 @@ def creatDB1():
 def createDB2():
     db = [dict()]*7
     for c in [(0, 1), (2, 3), (4, 5), (6, 7), (0, 4), (1, 5), (2, 6), (3, 7), (0, 3), (1, 2), (4, 7), (5, 6)]:
+        print(c)
         db[c[0]][c[1]] = {}
         for o1 in range(3):
             for p1 in range(8):
@@ -98,10 +99,10 @@ def createDB2():
                             os[p2] = o2
                             init = Rubik(ps, os)
                             new_state = BFS2(init, c[0], c[1])
-                            if new_state is not None:
-                                db[c[0]][c[1]][o1*1000+p1*100+o2*10+p2] = len(new_state.route)
+                            db[c[0]][c[1]][o1*1000+p1*100+o2*10+p2] = len(new_state.route)
+                            
     json.dump(db, open('dbPair.json', 'w'))
-
+    
 # Use to test algorithm
 def randomMove(n):
     S = "UuDdRrLlFfBb"
@@ -157,5 +158,6 @@ def run1(str):
 
 
 if __name__ == '__main__':
-    run1("DrUFDRLrfuDFu")
+    #run1("DrUFDRLrfuDFu")
     #runN(50)
+    createDB2()
