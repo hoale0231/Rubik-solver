@@ -70,7 +70,7 @@ class Rubik:
                     pos_cubes[self.cube[i]] = i
 
                 self.heuristic = sum([DB2[pair[0]][str(pair[1])][str(self.orie[pos_cubes[pair[0]]]*1000 + pos_cubes[pair[0]]*100
-                    + self.orie[pos_cubes[pair[1]]]*10 + pos_cubes[pair[1]])] for pair in PAIR_CUBES]) / 4 + len(self.route)
+                    + self.orie[pos_cubes[pair[1]]]*10 + pos_cubes[pair[1]])] for pair in PAIR_CUBES]) / 6 + len(self.route)
 
         return self.heuristic
 
