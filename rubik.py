@@ -33,6 +33,8 @@ DB = json.load(open('db.json'))
 DB2 = json.load(open('dbPair.json'))
 
 class Rubik:
+    mode = 2
+
     def __init__(self, cubde = GOAL_POSITION, orie = GOAL_ORIENTATION):
         self.cube = copy(cubde)     # Store cubie in order of position from 0 -> 7 according to the above convention
         self.orie = copy(orie)     # Store orientation of cubie in order of position from 0 -> 7 according to the above convention
@@ -58,19 +60,18 @@ class Rubik:
     # Calc heuristic value of current state
     def getHeuristic(self):
         if self.heuristic == 0: 
-            # self.heuristic = (sum([o != 0 for o in self.o]) + sum([i != self.p[i] for i in range(8)])) / 4 + len(self.route)
-            self.heuristic = sum([DB[self.cube[i]][str(self.orie[i]*10+i)] for i in range(8)]) / 4 + len(self.route)
-        return self.heuristic
+            if self.mode == 0:
+                self.heuristic = (sum([o != 0 for o in self.orie]) + sum([i != self.cube[i] for i in range(8)])) / 4 + len(self.route)
+            if self.mode == 1:
+                self.heuristic = sum([DB[self.cube[i]][str(self.orie[i]*10+i)] for i in range(8)]) / 4 + len(self.route)
+            if self.mode == 2:
+                pos_cubes = [-1]*8 # Record position of each cube in current state
+                for i in range(8):
+                    pos_cubes[self.cube[i]] = i
 
-    # Calc heuristic value of current sate (pair of cube case)
-    def getHeuristic2(self):
-        if self.heuristic == 0:
-            pos_cubes = [-1]*8 # Record position of each cube in current state
-            for i in range(8):
-                pos_cubes[self.cube[i]] = i
+                self.heuristic = sum([sum([DB2[pair[0]][str(pair[1])][str(self.orie[pos_cubes[pair[0]]]*1000 + pos_cubes[pair[0]]*100
+                    + self.orie[pos_cubes[pair[1]]]*10 + pos_cubes[pair[1]])] for pair in group]) for group in PAIR_CUBES]) / 4 + len(self.route)
 
-            self.heuristic = sum([sum([DB2[pair[0]][str(pair[1])][str(self.orie[pos_cubes[pair[0]]]*1000 + pos_cubes[pair[0]]*100
-                + self.orie[pos_cubes[pair[1]]]*10 + pos_cubes[pair[1]])] for pair in group]) for group in PAIR_CUBES]) / 3
         return self.heuristic
 
     # Make the position object hashable, i.e. addable to set()
@@ -81,9 +82,9 @@ class Rubik:
     def __eq__(self, o: object) -> bool:
         return self.cube == o.cube and self.orie == o.orie
     def __gt__(self, o):
-        return self.getHeuristic2() > o.getHeuristic2()
+        return self.getHeuristic() > o.getHeuristic()
     def __lt__(self, o):
-        return self.getHeuristic2() < o.getHeuristic2()
+        return self.getHeuristic() < o.getHeuristic()
 
     def getFaceColor(self, face):
         if face == 'U':

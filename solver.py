@@ -7,7 +7,8 @@ from rubik import Rubik
 # Pattern database, support heuristic function
 
 
-def A_star(initState: Rubik): 
+def A_star(initState: Rubik, mode = 2): 
+    Rubik.mode = mode
     stateQueue = PriorityQueue()
     visited = set()
     stateQueue.put(initState)
@@ -142,19 +143,19 @@ def runN(n):
     print("Case:", caseMax)
 
 # Try once with route designation
-def run1(str):
+def run1(str, mode):
     init = Rubik()
     init.moves(str)
     #init.transformToStandard()
     s = time()
-    goal, nodeCreated, nodeVisited = A_star(init)
+    goal, nodeCreated, nodeVisited = A_star(init, mode)
     e = time()
     print(e-s)
     print("Steps:", len(goal.route))
     print("Node visited:", nodeVisited)
     print("Node created:", nodeCreated)
     print(goal.route)
-    init.printEachStep(goal.route)
+    #init.printEachStep(goal.route)
 
 
 if __name__ == '__main__':
