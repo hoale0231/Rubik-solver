@@ -3,7 +3,7 @@ from queue import Queue, PriorityQueue
 import random
 import json
 #from rubik import Rubik
-from rubik import Rubik  
+from rubik import Rubik, PAIR_CUBES
 # Pattern database, support heuristic function
 
 
@@ -84,7 +84,7 @@ def creatDB1():
 
 def createDB2():
     db = [dict()]*7
-    for c in [(0, 1), (2, 3), (4, 5), (6, 7), (0, 7), (1, 6), (2, 5), (3, 4), (0, 3), (1, 2), (4, 7), (5, 6)]:
+    for c in PAIR_CUBES:
         print(c)
         db[c[0]][c[1]] = {}
         for o1 in range(3):
@@ -160,6 +160,6 @@ def run1(str, mode):
 
 
 if __name__ == '__main__':
-    run1("DrUFDRLrfuDFu", 2)
+    run1("DrUFDRLrfuDFu", mode=2)
     #runN(50)
     #createDB2()
