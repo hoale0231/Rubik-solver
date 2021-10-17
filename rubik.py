@@ -231,6 +231,8 @@ class Rubik:
 
     def randomFace(self, n):
         S = "UuDdRrLlFfBb"
+        route = ""
         for i in range(n):
-            self.moves(S[random.randrange(12)])
+            route += S[random.randrange(12)]
+        self.moves(route)
 

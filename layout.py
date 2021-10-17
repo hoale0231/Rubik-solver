@@ -1,3 +1,4 @@
+from time import sleep
 from PyQt5 import QtCore, QtGui, QtWidgets
 import matplotlib
 import matplotlib.pyplot as plt
@@ -9,6 +10,8 @@ from matplotlib.figure import Figure
 
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 from rubik import Rubik
+from solver import A_star
+from copy import deepcopy
 
 class RubikCube:
     def __init__(self):
@@ -94,7 +97,7 @@ class RubikCube:
         self.face_color['D'] = [hex2rgb[f] for f in self.rubik.getFaceColor('D')]
 
     def randomFace(self):
-        self.rubik.randomFace(10)
+        self.rubik.randomFace(5)
         self.get_face_color()
 
     def resetFace(self):
@@ -102,7 +105,7 @@ class RubikCube:
         self.get_face_color()
 
     def solve(self):
-        pass
+        return A_star(deepcopy(self.rubik))
 
     def nextStep(self):
         pass
@@ -287,9 +290,9 @@ class Ui_MainWindow(object):
         self.scrollAreaWidgetContents.setObjectName('scrollAreaWidgetContents')
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
         self.my2DCanvas = my2DCanvas(
-            parent=self.scrollAreaWidgetContents,
-            width=7.5,
-            height=1.5)
+                                parent=self.scrollAreaWidgetContents,
+                                width=7.5,
+                                height=1.5)
         self.pushButton_4 = QtWidgets.QPushButton(self.scrollAreaWidgetContents, text='Next Step')
         self.pushButton_4.setGeometry(QtCore.QRect(600, 160, 113, 32))
         self.pushButton_4.clicked.connect(self.solve_step)
@@ -344,8 +347,16 @@ class Ui_MainWindow(object):
     
 
     def solve(self):
-        self.cube.solve()
-        self.myMplCanvas.updateMpl(self.cube)
+        route, created, visited = self.cube.solve()
+        textRoute = ""
+        for c in route:
+            if c.islower():
+                textRoute += c.upper() + '\''
+            else:
+                textRoute += c
+            textRoute += ' '
+        self.my2DCanvas.textOutput(textRoute)
+        #self.myMplCanvas.updateMpl(self.cube)
         
 
     def randomFace(self):

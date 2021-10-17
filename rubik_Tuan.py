@@ -45,8 +45,8 @@ class Rubik:
 
     def getHeuristic(self):
         if self.heuristic == 0: 
-            # self.heuristic = sum([o != 0 for o in self.o]) + sum([i != self.p[i] for i in range(8)]) / 4 + len(self.route)
-            self.heuristic = sum([DB[self.p[i]][str(self.o[i]*10+i)] for i in range(8)]) / 4 + len(self.route)
+            self.heuristic = sum([o != 0 for o in self.o]) + sum([i != self.p[i] for i in range(8)]) #/ 4 + len(self.route)
+            # self.heuristic = sum([DB[self.p[i]][str(self.o[i]*10+i)] for i in range(8)]) / 4 + len(self.route)
         return self.heuristic
 
     def __hash__(self) -> int:
@@ -296,8 +296,8 @@ def GeneticAlgo(rubik : Rubik):
     crossover_rate = .2
     num_mates = int(num_pop * crossover_rate)
     mutation_rate = .3
-    def fitness_func(rubik):
-        return sum([o != 0 for o in rubik.o]) + sum([i != rubik.p[i] for i in range(8)])
+    def fitness_func(rubik: Rubik):
+        return rubik.getHeuristic()
     def crossover(p1, p2):
         crossover_point = random.randint(1, num_moves - 1)
         c1 = p1[:crossover_point] + p2[crossover_point:]

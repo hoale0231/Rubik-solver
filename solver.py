@@ -2,8 +2,8 @@ from time import time
 from queue import Queue, PriorityQueue
 import random
 import json
-from rubik import Rubik
-
+#from rubik import Rubik
+from rubik import Rubik  
 # Pattern database, support heuristic function
 
 
@@ -18,11 +18,11 @@ def A_star(initState: Rubik):
         return initState, len(visited), cnt
     while not stateQueue.empty():
         state: Rubik = stateQueue.get() 
-        for nextState in state.getChildStates():
+        for nextState in state.getFullChild():
             cnt += 1
             if nextState not in visited:
                 if nextState.isGoalState():
-                    return nextState, cnt, len(visited)
+                    return nextState.route, cnt, len(visited)
                 stateQueue.put(nextState)
                 visited.add(nextState) 
     return None
@@ -46,8 +46,26 @@ def BFS(initState: Rubik, index):
                 visited.add(nextState) 
     return None
 
+def BFS2(initState: Rubik, index1, index2): 
+    stateQueue = Queue()
+    visited = set()
+    stateQueue.put(initState)
+    visited.add(initState)
+    initState.route = ""
+    if initState.isCorrectPositionCube(index1) and initState.isCorrectPositionCube(index2):
+        return initState
+    while not stateQueue.empty():
+        state = stateQueue.get() 
+        for nextState in state.getChildStates():
+            if nextState not in visited:
+                if nextState.isCorrectPositionCube(index1) and nextState.isCorrectPositionCube(index2):
+                    return nextState
+                stateQueue.put(nextState)
+                visited.add(nextState) 
+    return None
+
 # Create pattern database
-def creatDB():
+def creatDB1():
     db = []
     for i in range(8):
         db.append(dict())
@@ -60,7 +78,13 @@ def creatDB():
                 os[p] = o
                 init.init(ps, os)
                 db[i][o * 10 + p] = len(BFS(init, i).route)
-    json.dump(db, open('db.json', 'w'))
+    json.dump(db, open('db2.json', 'w'))
+
+
+def createDB2():
+    db = []
+    for c in [(0, 1), (2, 3), (4, 5), (6, 7)]:
+        db.append(dict())
 
 # Use to test algorithm
 def randomMove(n):
@@ -82,7 +106,7 @@ def runN(n):
         print("N move:", i)
         print(shuffle)
         init.moves(shuffle)
-        init.transformToStandard()
+        #init.transformToStandard()
         s = time()
         goal, nodeCreated, nodeVisited = A_star(init)
         e = time()
@@ -104,7 +128,7 @@ def runN(n):
 def run1(str):
     init = Rubik()
     init.moves(str)
-    init.transformToStandard()
+    #init.transformToStandard()
     s = time()
     goal, nodeCreated, nodeVisited = A_star(init)
     e = time()
@@ -118,5 +142,4 @@ def run1(str):
 
 if __name__ == '__main__':
     run1("DrUFDRLrfuDFu")
-    runN(50)
-    #run1("DL")
+    #runN(50)
