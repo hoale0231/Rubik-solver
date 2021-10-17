@@ -98,7 +98,8 @@ class RubikCube:
 
     def randomFace(self):
         self.rubik = Rubik()
-        self.rubik.randomFace(5)
+        self.rubik.moves("lffFLffl")
+        #self.rubik.randomFace(10)
         self.get_face_color()
 
     def resetFace(self):
