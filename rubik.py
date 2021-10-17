@@ -2,6 +2,7 @@ from copy import copy, deepcopy
 from queue import Queue
 import json
 import random
+from typing_extensions import ParamSpec
 
 '''
         [0] [1]
@@ -28,8 +29,10 @@ GOAL_POSITION = [ULB, URB, URF, ULF, DLF, DRF, DRB, DLB]
 GOAL_ORIENTATION = [0]*8
 # Color corresponding to each cubie
 COLOR = [['w', 'g', 'o'],['w', 'o', 'b'],['w', 'b', 'r'],['w', 'r', 'g'],['y', 'g', 'r'],['y', 'r', 'b'],['y', 'b', 'o'],['y', 'o', 'g']]
+PAIR_CUBES = [[(0, 1), (2, 3), (4, 5), (6, 7)], [(0, 4), (1, 5), (2, 6), (3, 7)], [(0, 3), (1, 2), (4, 7), (5, 6)]]
 
 DB = json.load(open('db.json')) 
+DB2 = json.load(open('dbPair.json'))
 
 class Rubik:
     def __init__(self, cubde = GOAL_POSITION, orie = GOAL_ORIENTATION):
@@ -60,6 +63,16 @@ class Rubik:
             # self.heuristic = (sum([o != 0 for o in self.o]) + sum([i != self.p[i] for i in range(8)])) / 4 + len(self.route)
             self.heuristic = sum([DB[self.cube[i]][str(self.orie[i]*10+i)] for i in range(8)]) / 4 + len(self.route)
         return self.heuristic
+
+    # Calc heuristic value of current sate (pair of cube case)
+    def getHeuristic2(self):
+        if self.heuristic == 0:
+            pos_cubes = [] # Record position of each cube in current state
+            for i in range(8):
+                pos_cubes[self.cube[i]] = i
+
+            self.heuristic = sum([sum([DB2[pair[0]][pair[1]][self.orie[pos_cubes[pair[0]]]*1000 + pos_cubes[pair[0]]*100
+                + self.orie[pos_cubes[pair[1]]]*10 + pos_cubes[pair[1]]] for pair in item]) for item in PAIR_CUBES]) / 3
 
     # Make the position object hashable, i.e. addable to set()
     def __hash__(self):

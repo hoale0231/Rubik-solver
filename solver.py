@@ -82,9 +82,25 @@ def creatDB1():
 
 
 def createDB2():
-    db = []
-    for c in [(0, 1), (2, 3), (4, 5), (6, 7)]:
-        db.append(dict())
+    db = [dict()]*7
+    for c in [(0, 1), (2, 3), (4, 5), (6, 7), (0, 4), (1, 5), (2, 6), (3, 7), (0, 3), (1, 2), (4, 7), (5, 6)]:
+        db[c[0]][c[1]] = {}
+        for o1 in range(3):
+            for p1 in range(8):
+                for o2 in range(3):
+                    for p2 in range(8):
+                        if p1 != p2:
+                            ps = [-1]*8
+                            os = [0]*8
+                            ps[p1] = c[0]
+                            os[p1] = o1
+                            ps[p2] = c[1]
+                            os[p2] = o2
+                            init = Rubik(ps, os)
+                            new_state = BFS2(init, c[0], c[1])
+                            if new_state is not None:
+                                db[c[0]][c[1]][o1*1000+p1*100+o2*10+p2] = len(new_state.route)
+    json.dump(db, open('dbPair.json', 'w'))
 
 # Use to test algorithm
 def randomMove(n):
