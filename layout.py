@@ -105,8 +105,9 @@ class RubikCube:
         self.rubik = Rubik()
         self.get_face_color()
 
-    def solve(self):
-        return A_star(deepcopy(self.rubik))
+    def solve(self, mode):
+        goal = A_star(deepcopy(self.rubik), mode)
+        return goal
 
     def nextStep(self, move):
         self.rubik.moves(move)
@@ -349,12 +350,22 @@ class Ui_MainWindow(object):
         self.myMplCanvas.updateMpl(self.cube)
     
 
+    def solve2(self):
+        self.printSolution(self.cube.solve(0))
+
+    def solve1(self):
+        self.printSolution(self.cube.solve(1))
+
     def solve(self):
-        route, created, visited = self.cube.solve()
+        self.printSolution(self.cube.solve(3))
+        
+
+    def printSolution(self, goal):
         textRoute = ""
         self.solution = []
         self.currStep = 0
-        for c in route:
+        goalState, created, visited = goal
+        for c in goalState.route:
             if c.islower():
                 textRoute += c.upper() + '\''
             else:
@@ -362,7 +373,7 @@ class Ui_MainWindow(object):
             textRoute += ' '
             self.solution.append(c)
         self.my2DCanvas.textOutput(textRoute)
-        #self.myMplCanvas.updateMpl(self.cube)
+        self.myMplCanvas.updateMpl(self.cube)
 
     def randomFace(self):
         self.cube.randomFace()
@@ -372,5 +383,4 @@ class Ui_MainWindow(object):
         if self.currStep < len(self.solution):
             self.cube.nextStep(self.solution[self.currStep])
             self.currStep += 1
-            print(self.currStep)
             self.myMplCanvas.updateMpl(self.cube)

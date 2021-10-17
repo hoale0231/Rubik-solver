@@ -3,12 +3,15 @@ from queue import Queue, PriorityQueue
 import random
 import json
 #from rubik import Rubik
-from rubik import Rubik, PAIR_CUBES
+from rubik import Rubik, PAIR_CUBES, translateMove
 # Pattern database, support heuristic function
 
 
-def A_star(initState: Rubik, mode = 2): 
+def A_star(initState: Rubik, mode = 3): 
     Rubik.mode = mode
+    routeTranform = ""
+    if mode == 3:
+        routeTranform = initState.transformToStandard()
     stateQueue = PriorityQueue()
     visited = set()
     stateQueue.put(initState)
@@ -19,10 +22,12 @@ def A_star(initState: Rubik, mode = 2):
         return initState, len(visited), cnt
     while not stateQueue.empty():
         state: Rubik = stateQueue.get() 
-        for nextState in state.getFullChild():
+        for nextState in state.getChildStates():
             cnt += 1
             if nextState not in visited:
                 if nextState.isGoalState():
+                    if mode == 3:
+                        nextState.route = translateMove(routeTranform, nextState.route)
                     return nextState, cnt, len(visited)
                 stateQueue.put(nextState)
                 visited.add(nextState) 
@@ -86,7 +91,7 @@ def createDB2():
     db = [{} for _ in range(7)]
     for c in PAIR_CUBES:
         print(c)
-        db[c[0]][c[1]] = {}
+        db[c[0]+c[1]] = dict()
         for o1 in range(3):
             for p1 in range(8):
                 for o2 in range(3):
@@ -94,16 +99,18 @@ def createDB2():
                         if p1 != p2:
                             ps = [-1]*8
                             os = [0]*8
-                            ps[p1] = c[0]
+                            ps[c[0]] = p1
                             os[p1] = o1
-                            ps[p2] = c[1]
+                            ps[c[1]] = p2
                             os[p2] = o2
                             init = Rubik(ps, os)
-                            new_state = BFS2(init, c[0], c[1])
-                            db[c[0]][c[1]][o1*1000+p1*100+o2*10+p2] = len(new_state.route)
+                            new_state = BFS2(init, p1, p2)
+                            db[c[0]+c[1]][o1*1000+p1*100+o2*10+p2] = len(new_state.route)
+                            
 
     json.dump(db, open('dbPair.json', 'w'))
-    
+
+
 # Use to test algorithm
 def randomMove(n):
     S = "UuDdRrLlFfBb"
@@ -146,9 +153,9 @@ def runN(n):
 def run1(str, mode):
     init = Rubik()
     init.moves(str)
-    #init.transformToStandard()
     s = time()
     goal, nodeCreated, nodeVisited = A_star(init, mode)
+    print(goal.getHeuristic())
     e = time()
     print(e-s)
     print("Steps:", len(goal.route))
@@ -159,6 +166,8 @@ def run1(str, mode):
 
 
 if __name__ == '__main__':
-    run1("DrUFDRLrfuDFu", mode=2)
+    run1("DrUFDRLrfuDFu", mode=3)
     #runN(50)
     #createDB2()
+    #init = Rubik()
+    #print(init.getHeuristic())
