@@ -88,7 +88,7 @@ def creatDB1():
 
 
 def createDB2():
-    db = dict()
+    db = [{} for _ in range(7)]
     for c in PAIR_CUBES:
         print(c)
         db[c[0]+c[1]] = dict()

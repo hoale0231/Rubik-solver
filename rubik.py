@@ -70,8 +70,13 @@ class Rubik:
             if self.mode == 1 or self.mode == 3:
                 self.heuristic = sum([DB[self.cube[i]][str(self.orie[i]*10+i)] for i in range(8)]) /4 + len(self.route)
             if self.mode == 2:
-                self.heuristic = sum([DB2[str(pair[0]+pair[1])][str(self.orie[pair[0]]*1000 + self.cube[pair[0]]*100
-                    + self.orie[pair[1]]*10 + self.cube[pair[1]])] for pair in PAIR_CUBES]) / 3 / 4 + len(self.route)
+                pos_cubes = [-1]*8 # Record position of each cube in current state
+                for i in range(8):
+                    pos_cubes[self.cube[i]] = i
+
+                self.heuristic = sum([DB2[pair[0]][str(pair[1])][str(self.orie[pos_cubes[pair[0]]]*1000 + pos_cubes[pair[0]]*100
+                    + self.orie[pos_cubes[pair[1]]]*10 + pos_cubes[pair[1]])] for pair in PAIR_CUBES]) / 6 + len(self.route)
+
         return self.heuristic
 
     # Make the position object hashable, i.e. addable to set()
