@@ -22,7 +22,7 @@ def A_star(initState: Rubik):
             cnt += 1
             if nextState not in visited:
                 if nextState.isGoalState():
-                    return nextState.route, cnt, len(visited)
+                    return nextState, cnt, len(visited)
                 stateQueue.put(nextState)
                 visited.add(nextState) 
     return None
@@ -83,7 +83,7 @@ def creatDB1():
 
 def createDB2():
     db = [dict()]*7
-    for c in [(0, 1), (2, 3), (4, 5), (6, 7), (0, 4), (1, 5), (2, 6), (3, 7), (0, 3), (1, 2), (4, 7), (5, 6)]:
+    for c in [(0, 1), (2, 3), (4, 5), (6, 7), (0, 7), (1, 6), (2, 5), (3, 4), (0, 3), (1, 2), (4, 7), (5, 6)]:
         print(c)
         db[c[0]][c[1]] = {}
         for o1 in range(3):
