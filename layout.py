@@ -160,7 +160,20 @@ class my2DCanvas(FigureCanvas):
 
     def draw_solution(self, solution):
         im = np.ones([200, 1680, 4])
-
+        imlib = [plt.imread('F.png'),
+                 plt.imread('Fi.png'),
+                 plt.imread('L.png'),
+                 plt.imread('Li.png'),
+                 plt.imread('U.png'),
+                 plt.imread('Ui.png'),
+                 plt.imread('B.png'),
+                 plt.imread('Bi.png'),
+                 plt.imread('R.png'),
+                 plt.imread('Ri.png'),
+                 plt.imread('D.png'),
+                 plt.imread('Di.png')]
+        for i, s in enumerate(solution):
+            im[:, i*120:(i+1)*120, :] = imlib[s]
         self.axes.imshow(im)
         self.axes.set_axis_off()
 
@@ -309,6 +322,196 @@ class Ui_MainWindow(object):
                                         'background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(245, 245, 245), stop: 1 rgb(245, 245, 245));')
         self.pushButton_4.setObjectName('pushButton_4')
         
+
+        # output string for input character
+        self.character_string = ""
+
+        self.pushButton_F = QtWidgets.QPushButton(self.groupBox, text='F')
+        self.pushButton_F.setGeometry(QtCore.QRect(20, 20, 30, 32))
+        self.pushButton_F.setStyleSheet('margin: 6px;\n'
+                                        'border-color: #0c457e;\n'
+                                        'border-style: outset;\n'
+                                        'border-radius: 5px;\n'
+                                        'border-width: 1px;\n'
+                                        'color: black;\n'
+                                        'background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(245, 245, 245), stop: 1 rgb(245, 245, 245));')
+        self.pushButton_F.setFlat(False)
+        self.pushButton_F.setObjectName('pushButton_F')
+        self.pushButton_F.clicked.connect(self.bF_clicked)
+
+        self.pushButton_B = QtWidgets.QPushButton(self.groupBox, text='B')
+        self.pushButton_B.setGeometry(QtCore.QRect(60, 20, 30, 32))
+        self.pushButton_B.setStyleSheet('margin: 6px;\n'
+                                        'border-color: #0c457e;\n'
+                                        'border-style: outset;\n'
+                                        'border-radius: 5px;\n'
+                                        'border-width: 1px;\n'
+                                        'color: black;\n'
+                                        'background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(245, 245, 245), stop: 1 rgb(245, 245, 245));')
+        self.pushButton_B.setFlat(False)
+        self.pushButton_B.setObjectName('pushButton_B')
+        self.pushButton_B.clicked.connect(self.bB_clicked)
+
+        self.pushButton_L = QtWidgets.QPushButton(self.groupBox, text='L')
+        self.pushButton_L.setGeometry(QtCore.QRect(100, 20, 30, 32))
+        self.pushButton_L.setStyleSheet('margin: 6px;\n'
+                                        'border-color: #0c457e;\n'
+                                        'border-style: outset;\n'
+                                        'border-radius: 5px;\n'
+                                        'border-width: 1px;\n'
+                                        'color: black;\n'
+                                        'background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(245, 245, 245), stop: 1 rgb(245, 245, 245));')
+        self.pushButton_L.setFlat(False)
+        self.pushButton_L.setObjectName('pushButton_L')
+        self.pushButton_L.clicked.connect(self.bL_clicked)
+
+        self.pushButton_R = QtWidgets.QPushButton(self.groupBox, text='R')
+        self.pushButton_R.setGeometry(QtCore.QRect(140, 20, 30, 32))
+        self.pushButton_R.setStyleSheet('margin: 6px;\n'
+                                        'border-color: #0c457e;\n'
+                                        'border-style: outset;\n'
+                                        'border-radius: 5px;\n'
+                                        'border-width: 1px;\n'
+                                        'color: black;\n'
+                                        'background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(245, 245, 245), stop: 1 rgb(245, 245, 245));')
+        self.pushButton_R.setFlat(False)
+        self.pushButton_R.setObjectName('pushButton_R')
+        self.pushButton_R.clicked.connect(self.bR_clicked)
+
+        self.pushButton_U = QtWidgets.QPushButton(self.groupBox, text='U')
+        self.pushButton_U.setGeometry(QtCore.QRect(180, 20, 30, 32))
+        self.pushButton_U.setStyleSheet('margin: 6px;\n'
+                                        'border-color: #0c457e;\n'
+                                        'border-style: outset;\n'
+                                        'border-radius: 5px;\n'
+                                        'border-width: 1px;\n'
+                                        'color: black;\n'
+                                        'background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(245, 245, 245), stop: 1 rgb(245, 245, 245));')
+        self.pushButton_U.setFlat(False)
+        self.pushButton_U.setObjectName('pushButton_U')
+        self.pushButton_U.clicked.connect(self.bU_clicked)
+
+        self.pushButton_D = QtWidgets.QPushButton(self.groupBox, text='D')
+        self.pushButton_D.setGeometry(QtCore.QRect(220, 20, 30, 32))
+        self.pushButton_D.setStyleSheet('margin: 6px;\n'
+                                        'border-color: #0c457e;\n'
+                                        'border-style: outset;\n'
+                                        'border-radius: 5px;\n'
+                                        'border-width: 1px;\n'
+                                        'color: black;\n'
+                                        'background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(245, 245, 245), stop: 1 rgb(245, 245, 245));')
+        self.pushButton_D.setFlat(False)
+        self.pushButton_D.setObjectName('pushButton_D')
+        self.pushButton_D.clicked.connect(self.bD_clicked)
+
+        self.pushButton_Fi = QtWidgets.QPushButton(self.groupBox, text='F\'')
+        self.pushButton_Fi.setGeometry(QtCore.QRect(20, 70, 30, 32))
+        self.pushButton_Fi.setStyleSheet('margin: 6px;\n'
+                                        'border-color: #0c457e;\n'
+                                        'border-style: outset;\n'
+                                        'border-radius: 5px;\n'
+                                        'border-width: 1px;\n'
+                                        'color: black;\n'
+                                        'background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(245, 245, 245), stop: 1 rgb(245, 245, 245));')
+        self.pushButton_Fi.setFlat(False)
+        self.pushButton_Fi.setObjectName('pushButton_Fi')
+        self.pushButton_Fi.clicked.connect(self.bFi_clicked)
+
+        self.pushButton_Bi = QtWidgets.QPushButton(self.groupBox, text='B\'')
+        self.pushButton_Bi.setGeometry(QtCore.QRect(60, 70, 30, 32))
+        self.pushButton_Bi.setStyleSheet('margin: 6px;\n'
+                                        'border-color: #0c457e;\n'
+                                        'border-style: outset;\n'
+                                        'border-radius: 5px;\n'
+                                        'border-width: 1px;\n'
+                                        'color: black;\n'
+                                        'background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(245, 245, 245), stop: 1 rgb(245, 245, 245));')
+        self.pushButton_Bi.setFlat(False)
+        self.pushButton_Bi.setObjectName('pushButton_Bi')
+        self.pushButton_Bi.clicked.connect(self.bBi_clicked)
+
+        self.pushButton_Li = QtWidgets.QPushButton(self.groupBox, text='L\'')
+        self.pushButton_Li.setGeometry(QtCore.QRect(100, 70, 30, 32))
+        self.pushButton_Li.setStyleSheet('margin: 6px;\n'
+                                        'border-color: #0c457e;\n'
+                                        'border-style: outset;\n'
+                                        'border-radius: 5px;\n'
+                                        'border-width: 1px;\n'
+                                        'color: black;\n'
+                                        'background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(245, 245, 245), stop: 1 rgb(245, 245, 245));')
+        self.pushButton_Li.setFlat(False)
+        self.pushButton_Li.setObjectName('pushButton_Li')
+        self.pushButton_Li.clicked.connect(self.bLi_clicked)
+
+        self.pushButton_Ri = QtWidgets.QPushButton(self.groupBox, text='R\'')
+        self.pushButton_Ri.setGeometry(QtCore.QRect(140, 70, 30, 32))
+        self.pushButton_Ri.setStyleSheet('margin: 6px;\n'
+                                        'border-color: #0c457e;\n'
+                                        'border-style: outset;\n'
+                                        'border-radius: 5px;\n'
+                                        'border-width: 1px;\n'
+                                        'color: black;\n'
+                                        'background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(245, 245, 245), stop: 1 rgb(245, 245, 245));')
+        self.pushButton_Ri.setFlat(False)
+        self.pushButton_Ri.setObjectName('pushButton_Ri')
+        self.pushButton_Ri.clicked.connect(self.bRi_clicked)
+
+
+        self.pushButton_Ui = QtWidgets.QPushButton(self.groupBox, text='U\'')
+        self.pushButton_Ui.setGeometry(QtCore.QRect(180, 70, 30, 32))
+        self.pushButton_Ui.setStyleSheet('margin: 6px;\n'
+                                        'border-color: #0c457e;\n'
+                                        'border-style: outset;\n'
+                                        'border-radius: 5px;\n'
+                                        'border-width: 1px;\n'
+                                        'color: black;\n'
+                                        'background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(245, 245, 245), stop: 1 rgb(245, 245, 245));')
+        self.pushButton_Ui.setFlat(False)
+        self.pushButton_Ui.setObjectName('pushButton_Ui')
+        self.pushButton_Ui.clicked.connect(self.bUi_clicked)
+
+        self.pushButton_Di = QtWidgets.QPushButton(self.groupBox, text='D\'')
+        self.pushButton_Di.setGeometry(QtCore.QRect(220, 70, 30, 32))
+        self.pushButton_Di.setStyleSheet('margin: 6px;\n'
+                                        'border-color: #0c457e;\n'
+                                        'border-style: outset;\n'
+                                        'border-radius: 5px;\n'
+                                        'border-width: 1px;\n'
+                                        'color: black;\n'
+                                        'background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(245, 245, 245), stop: 1 rgb(245, 245, 245));')
+        self.pushButton_Di.setFlat(False)
+        self.pushButton_Di.setObjectName('pushButton_Di')
+        self.pushButton_Di.clicked.connect(self.bDi_clicked)
+
+        #groupBox show input character
+        self.groupBox_blank = QtWidgets.QGroupBox(self.centralwidget)
+        self.groupBox_blank.setGeometry(QtCore.QRect(40, 170, 350, 80))
+        font = QtGui.QFont()
+        font.setFamily('Apple SD Gothic Neo')
+        font.setBold(True)
+        font.setItalic(True)
+        font.setUnderline(False)
+        font.setWeight(75)
+        self.groupBox_blank.setFont(font)
+        # self.groupBox_blank.setStyleSheet(  'background-color: rgb(225, 229, 233);\n'
+        #                                 'border-radius: 10px;')
+        self.groupBox_blank.setFlat(True)
+        self.groupBox_blank.setObjectName('groupBox_blank')
+        # self.frame_1 = QtWidgets.QFrame(self.groupBox_blank)
+        # self.frame_1.setGeometry(QtCore.QRect(40, 170, 350, 80))
+        # self.frame_1.setFrameShadow(QtWidgets.QFrame.Raised)
+        # self.frame_1.setObjectName('frame_1')
+        self.scrollArea_1 = QtWidgets.QScrollArea(self.groupBox_blank)
+        self.scrollArea_1.setGeometry(QtCore.QRect(4, 170, 350, 80))
+        self.scrollArea_1.setWidgetResizable(True)
+        self.scrollArea_1.setObjectName('scrollArea')
+        self.scrollAreaWidgetContents_1 = QtWidgets.QWidget()
+        self.scrollAreaWidgetContents_1.setGeometry(QtCore.QRect(4, 170, 350, 80))
+        self.scrollAreaWidgetContents_1.setObjectName('scrollAreaWidgetContents_1')
+        self.scrollArea_1.setWidget(self.scrollAreaWidgetContents_1)
+
+
+
         self.cube.rotate(1.5, 0, 0)
         font = QtGui.QFont()
         font.setFamily('Apple SD Gothic Neo')
@@ -373,6 +576,8 @@ class Ui_MainWindow(object):
             textRoute += ' '
             self.solution.append(c)
         self.my2DCanvas.textOutput(textRoute)
+        
+        # self.my2DCanvas.updateMpl(self.solution)
         self.myMplCanvas.updateMpl(self.cube)
 
     def randomFace(self):
@@ -384,3 +589,39 @@ class Ui_MainWindow(object):
             self.cube.nextStep(self.solution[self.currStep])
             self.currStep += 1
             self.myMplCanvas.updateMpl(self.cube)
+
+    def bF_clicked(self):
+            self.character_string+='F '
+            
+    def bB_clicked(self):
+            self.character_string+='B '
+            
+    def bL_clicked(self):
+            self.character_string+='L '
+            
+    def bR_clicked(self):
+            self.character_string+='R '
+            
+    def bU_clicked(self):
+            self.character_string+='U'
+            
+    def bD_clicked(self):
+            self.character_string+='D '
+            
+    def bFi_clicked(self):
+            self.character_string+='F\' '
+            
+    def bBi_clicked(self):
+            self.character_string+='B\' '
+            
+    def bLi_clicked(self):
+            self.character_string+='L\' '
+            
+    def bRi_clicked(self):
+            self.character_string+='R\' '
+            
+    def bUi_clicked(self):
+            self.character_string+='U\' '
+            
+    def bDi_clicked(self):
+            self.character_string+='D\' '
