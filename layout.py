@@ -213,8 +213,8 @@ class Ui_MainWindow(object):
                                         'background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(245, 245, 245), stop: 1 rgb(245, 245, 245));')
         self.pushButton_2.setFlat(False)
         self.pushButton_2.setObjectName('pushButton_2')
-        self.pushButton_2.clicked.connect(self.resetColor)
-        self.pushButton_3 = QtWidgets.QPushButton(self.groupBox, text='Random')
+        
+        self.pushButton_3 = QtWidgets.QPushButton(self.groupBox, text='Solve 1')
         self.pushButton_3.setGeometry(QtCore.QRect(20, 200, 113, 32))
         self.pushButton_3.setStyleSheet('margin: 6px;\n'
                                         'border-color: #0c457e;\n'
@@ -225,7 +225,57 @@ class Ui_MainWindow(object):
                                         'background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(245, 245, 245), stop: 1 rgb(245, 245, 245));')
         self.pushButton_3.setFlat(False)
         self.pushButton_3.setObjectName('pushButton_3')
-        self.pushButton_3.clicked.connect(self.randomFace)
+
+        self.pushButton_5 = QtWidgets.QPushButton(self.groupBox, text='Random')
+        self.pushButton_5.setGeometry(QtCore.QRect(50, 20, 113, 32))
+        self.pushButton_5.setStyleSheet('margin: 6px;\n'
+                                        'border-color: #0c457e;\n'
+                                        'border-style: outset;\n'
+                                        'border-radius: 5px;\n'
+                                        'border-width: 1px;\n'
+                                        'color: black;\n'
+                                        'background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(245, 245, 245), stop: 1 rgb(245, 245, 245));')
+        self.pushButton_5.setFlat(False)
+        self.pushButton_5.setObjectName('pushButton_5')
+        self.pushButton_5.clicked.connect(self.randomFace)
+
+        self.pushButton_6 = QtWidgets.QPushButton(self.groupBox, text='Reset')
+        self.pushButton_6.setGeometry(QtCore.QRect(210, 20, 113, 32))
+        self.pushButton_6.setStyleSheet('margin: 6px;\n'
+                                        'border-color: #0c457e;\n'
+                                        'border-style: outset;\n'
+                                        'border-radius: 5px;\n'
+                                        'border-width: 1px;\n'
+                                        'color: black;\n'
+                                        'background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(245, 245, 245), stop: 1 rgb(245, 245, 245));')
+        self.pushButton_6.setFlat(False)
+        self.pushButton_6.setObjectName('pushButton_6')
+        self.pushButton_6.clicked.connect(self.resetColor)
+
+        self.pushButton_7 = QtWidgets.QPushButton(self.groupBox, text='Input Colors')
+        self.pushButton_7.setGeometry(QtCore.QRect(50, 45, 113, 32))
+        self.pushButton_7.setStyleSheet('margin: 6px;\n'
+                                        'border-color: #0c457e;\n'
+                                        'border-style: outset;\n'
+                                        'border-radius: 5px;\n'
+                                        'border-width: 1px;\n'
+                                        'color: black;\n'
+                                        'background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(245, 245, 245), stop: 1 rgb(245, 245, 245));')
+        self.pushButton_7.setFlat(False)
+        self.pushButton_7.setObjectName('pushButton_7')
+
+        self.pushButton_8 = QtWidgets.QPushButton(self.groupBox, text='Input Steps')
+        self.pushButton_8.setGeometry(QtCore.QRect(210, 45, 113, 32))
+        self.pushButton_8.setStyleSheet('margin: 6px;\n'
+                                        'border-color: #0c457e;\n'
+                                        'border-style: outset;\n'
+                                        'border-radius: 5px;\n'
+                                        'border-width: 1px;\n'
+                                        'color: black;\n'
+                                        'background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(245, 245, 245), stop: 1 rgb(245, 245, 245));')
+        self.pushButton_8.setFlat(False)
+        self.pushButton_8.setObjectName('pushButton_8')
+
         self.groupBox_2 = QtWidgets.QGroupBox(self.centralwidget)
         self.groupBox_2.setGeometry(QtCore.QRect(420, 60, 351, 241))
         font = QtGui.QFont()
@@ -329,8 +379,8 @@ class Ui_MainWindow(object):
         self.groupBox.setTitle(_translate('MainWindow', 'Configuration'))
 
        
-        self.pushButton.setText(_translate('MainWindow', 'Solve'))
-        self.pushButton_2.setText(_translate('MainWindow', 'Reset'))
+        self.pushButton.setText(_translate('MainWindow', 'Solve 3'))
+        self.pushButton_2.setText(_translate('MainWindow', 'Solve 2'))
         self.groupBox_2.setTitle(_translate('MainWindow', 'Visualization'))
         self.groupBox_3.setTitle(_translate('MainWindow', 'Solution'))
 
