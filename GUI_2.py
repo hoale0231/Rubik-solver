@@ -9,6 +9,8 @@ from matplotlib.figure import Figure
 
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 from rubik import Rubik
+from solver import A_star
+from copy import deepcopy
 
 class RubikCube:
     def __init__(self):
@@ -94,18 +96,21 @@ class RubikCube:
         self.face_color['D'] = [hex2rgb[f] for f in self.rubik.getFaceColor('D')]
 
     def randomFace(self):
-        self.rubik.randomFace(10)
+        self.rubik = Rubik()
+        self.rubik.randomFace(20)
         self.get_face_color()
 
     def resetFace(self):
         self.rubik = Rubik()
         self.get_face_color()
 
-    def solve(self):
-        pass
+    def solve(self, mode):
+        goal = A_star(deepcopy(self.rubik), mode)
+        return goal
 
-    def nextStep(self):
-        pass
+    def nextStep(self, move):
+        self.rubik.moves(move)
+        self.get_face_color()
 
 #TODO:
 class my3DCanvas(FigureCanvas):
@@ -154,8 +159,55 @@ class my2DCanvas(FigureCanvas):
         self.draw()
 
     def draw_solution(self, solution):
-        im = np.ones([200, 1680, 4])
+        #pixel: 121x171 /// 1694 = 121 x 14 (max 14 steps)
+        im = np.ones([171, 1694, 4])
         #FIXME: Add image solution
+
+        imlib = [plt.imread('Images/F.png'),
+                 plt.imread('Images/Fi.png'),
+                 plt.imread('Images/L.png'),
+                 plt.imread('Images/Li.png'),
+                 plt.imread('Images/U.png'),
+                 plt.imread('Images/Ui.png'),
+                 plt.imread('Images/B.png'),
+                 plt.imread('Images/Bi.png'),
+                 plt.imread('Images/R.png'),
+                 plt.imread('Images/Ri.png'),
+                 plt.imread('Images/D.png'),
+                 plt.imread('Images/Di.png')]
+        
+        copySolution = []
+        for move in solution:
+            if move == 'B':
+                copySolution.append(0)
+            elif move == 'b':
+                copySolution.append(1)
+            elif move == 'D':
+                copySolution.append(2)
+            elif move == 'd':
+                copySolution.append(3)
+            elif move == 'F':
+                copySolution.append(4)
+            elif move == 'f':
+                copySolution.append(5)
+            elif move == 'L':
+                copySolution.append(6)
+            elif move == 'l':
+                copySolution.append(7)
+            elif move == 'R':
+                copySolution.append(8)
+            elif move == 'r':
+                copySolution.append(9)
+            elif move == 'U':
+                copySolution.append(10)
+            elif move == 'u':
+                copySolution.append(11)
+
+        print('solution: ', solution)
+        print('copySolution: ', copySolution)
+        for i, s in enumerate(copySolution):
+            im[:, i*121:(i+1)*121, :] = imlib[s]
+
         self.axes.imshow(im)
         self.axes.set_axis_off()
 
@@ -170,8 +222,8 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         self.cube = RubikCube()
         self.solution = []
-        #self.posColor = [['w', 'w', 'w']]*8
         self.posColor = [['w' for i in range(3)] for j in range(8)]
+        self.currStep = 0
 
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1104, 810)
@@ -657,15 +709,38 @@ class Ui_MainWindow(object):
         self.myMplCanvas.updateMpl(self.cube)
     
 
-    def solve(self):
-        self.cube.solve()
+    def solve(self, mode):
+        self.printSolution(self.cube.solve(mode))
+        self.my2DCanvas.updateMpl(self.solution)
+        # self.cube.solve()
+        # self.myMplCanvas.updateMpl(self.cube)
+    
+    def printSolution(self, goal):
+        textRoute = ""
+        self.solution = []
+        self.currStep = 0
+        goalState, created, visited = goal
+        for c in goalState.route:
+            if c.islower():
+                textRoute += c.upper() + '\''
+            else:
+                textRoute += c
+            textRoute += ' '
+            self.solution.append(c)
+        self.my2DCanvas.textOutput(textRoute)
+        # print('solution: ', self.solution)
+        # self.my2DCanvas.updateMpl(self.solution)
         self.myMplCanvas.updateMpl(self.cube)
-        
 
     def randomFace(self):
         self.cube.randomFace()
         self.myMplCanvas.updateMpl(self.cube)
 
     def solve_step(self):
-        self.cube.nextStep()
-        self.myMplCanvas.updateMpl(self.cube)
+        if self.currStep < len(self.solution):
+            self.cube.nextStep(self.solution[self.currStep])
+            self.currStep += 1
+            self.myMplCanvas.updateMpl(self.cube)
+    
+    def inputStr(self, char):
+        self.character_string += char + ' '
