@@ -357,7 +357,7 @@ class Ui_MainWindow(object):
         self.printSolution(self.cube.solve(1))
 
     def solve(self):
-        self.printSolution(self.cube.solve(3))
+        self.printSolution(self.cube.solve(2))
         
 
     def printSolution(self, goal):
