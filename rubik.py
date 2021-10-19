@@ -1,8 +1,8 @@
 from copy import copy, deepcopy
+from os import pardir
 from queue import Queue
 import json
 import random
-
 '''
         [0] [1]
            U
@@ -28,13 +28,21 @@ GOAL_POSITION = [ULB, URB, URF, ULF, DLF, DRF, DRB, DLB]
 GOAL_ORIENTATION = [0]*8
 # Color corresponding to each cubie
 COLOR = [['w', 'g', 'o'],['w', 'o', 'b'],['w', 'b', 'r'],['w', 'r', 'g'],['y', 'g', 'r'],['y', 'r', 'b'],['y', 'b', 'o'],['y', 'o', 'g']]
+PAIR_CUBES = [(0, 1), (2, 3), (4, 5), (6, 7), (0, 7), (1, 6), (2, 5), (3, 4), (0, 3), (1, 2), (4, 7), (5, 6)]
+
+def getColor(p, o):
+    if p == -1: return '_'
+    return COLOR[p][o]
 
 DB = json.load(open('db.json')) 
+DB2 = json.load(open('dbPair.json'))
 
 class Rubik:
-    def __init__(self, p = GOAL_POSITION, o = GOAL_ORIENTATION):
-        self.cube = copy(p)     # Store cubie in order of position from 0 -> 7 according to the above convention
-        self.orie = copy(o)     # Store orientation of cubie in order of position from 0 -> 7 according to the above convention
+    mode = 3
+
+    def __init__(self, cubde = GOAL_POSITION, orie = GOAL_ORIENTATION):
+        self.cube = copy(cubde)     # Store cubie in order of position from 0 -> 7 according to the above convention
+        self.orie = copy(orie)     # Store orientation of cubie in order of position from 0 -> 7 according to the above convention
         self.route = str()      # Store moved steps
         self.heuristic = 0      # Store heuristic value
 
@@ -57,8 +65,18 @@ class Rubik:
     # Calc heuristic value of current state
     def getHeuristic(self):
         if self.heuristic == 0: 
-            # self.heuristic = (sum([o != 0 for o in self.o]) + sum([i != self.p[i] for i in range(8)])) / 4 + len(self.route)
-            self.heuristic = sum([DB[self.cube[i]][str(self.orie[i]*10+i)] for i in range(8)]) / 4 + len(self.route)
+            if self.mode == 0:
+                self.heuristic = (sum([o != 0 for o in self.orie]) + sum([i != self.cube[i] for i in range(8)])) / 4 + len(self.route)
+            if self.mode == 1:
+                self.heuristic = sum([DB[self.cube[i]][str(self.orie[i]*10+i)] for i in range(8)]) /4 + len(self.route)
+            if self.mode == 2:
+                pos_cubes = [-1]*8 # Record position of each cube in current state
+                for i in range(8):
+                    pos_cubes[self.cube[i]] = i
+
+                self.heuristic = sum([DB2[pair[0]][str(pair[1])][str(self.orie[pos_cubes[pair[0]]]*1000 + pos_cubes[pair[0]]*100
+                    + self.orie[pos_cubes[pair[1]]]*10 + pos_cubes[pair[1]])] for pair in PAIR_CUBES]) / 6 + len(self.route)
+
         return self.heuristic
 
     # Make the position object hashable, i.e. addable to set()
@@ -147,6 +165,8 @@ class Rubik:
         self.cube[ULB], self.cube[URB], self.cube[DRB], self.cube[DLB] = self.cube[DLB], self.cube[ULB], self.cube[URB], self.cube[DRB]
         self.orie[ULB], self.orie[URB], self.orie[DRB], self.orie[DLB] = (self.orie[DLB] + 2) % 3, (self.orie[ULB] + 1) % 3, (self.orie[URB] + 2) % 3, (self.orie[DRB] + 1) % 3
 
+    
+
     # Help function - moves multi step
     def moves(self, route: str):
         for c in route:
@@ -167,7 +187,8 @@ class Rubik:
     # Get all child state of current state
     def getChildStates(self):
         states = []
-        for c in "UuFfRr":
+        legalMoves = "UuFfRr"
+        for c in legalMoves:
             copy = self.copy()
             copy.moves(c)
             states.append(copy)
@@ -228,6 +249,7 @@ class Rubik:
             moves += move
             moves += follow[move]
         self.moves(moves)
+        return route
 
     def randomFace(self, n):
         S = "UuDdRrLlFfBb"
@@ -236,3 +258,181 @@ class Rubik:
             route += S[random.randrange(12)]
         self.moves(route)
 
+translate = {
+    'u' : {
+        'U' : 'U',
+        'd' : 'd',
+        'u' : 'u',
+        'D' : 'D',
+        'R' : 'F',
+        'l' : 'b',
+        'r' : 'f',
+        'L' : 'B',
+        'F' : 'L',
+        'b' : 'r',
+        'f' : 'l',
+        'B' : 'R'
+    },
+    'D' : {
+        'U' : 'U',
+        'd' : 'd',
+        'u' : 'u',
+        'D' : 'D',
+        'R' : 'F',
+        'l' : 'b',
+        'r' : 'f',
+        'L' : 'B',
+        'F' : 'L',
+        'b' : 'r',
+        'f' : 'l',
+        'B' : 'R'
+    },
+    'U' : {
+        'U' : 'U',
+        'd' : 'd',
+        'u' : 'u',
+        'D' : 'D',
+        'R' : 'B',
+        'l' : 'f',
+        'r' : 'b',
+        'L' : 'F',
+        'F' : 'R',
+        'b' : 'l',
+        'f' : 'r',
+        'B' : 'L'
+    },
+    'd' : {
+        'U' : 'U',
+        'd' : 'd',
+        'u' : 'u',
+        'D' : 'D',
+        'R' : 'B',
+        'l' : 'f',
+        'r' : 'b',
+        'L' : 'F',
+        'F' : 'R',
+        'b' : 'l',
+        'f' : 'r',
+        'B' : 'L'
+    },
+    'r' : {
+        'U' : 'B',
+        'd' : 'f',
+        'u' : 'b',
+        'D' : 'F',
+        'R' : 'R',
+        'l' : 'l',
+        'r' : 'r',
+        'L' : 'L',
+        'F' : 'U',
+        'b' : 'd',
+        'f' : 'u',
+        'B' : 'D'
+    },
+    'L' : {
+        'U' : 'B',
+        'd' : 'f',
+        'u' : 'b',
+        'D' : 'F',
+        'R' : 'R',
+        'l' : 'l',
+        'r' : 'r',
+        'L' : 'L',
+        'F' : 'U',
+        'b' : 'd',
+        'f' : 'u',
+        'B' : 'D'
+    },
+    'R' : {
+        'U' : 'F',
+        'd' : 'b',
+        'u' : 'f',
+        'D' : 'B',
+        'R' : 'R',
+        'l' : 'l',
+        'r' : 'r',
+        'L' : 'L',
+        'F' : 'D',
+        'b' : 'u',
+        'f' : 'd',
+        'B' : 'U'
+    },
+    'l' : {
+        'U' : 'F',
+        'd' : 'b',
+        'u' : 'f',
+        'D' : 'B',
+        'R' : 'R',
+        'l' : 'l',
+        'r' : 'r',
+        'L' : 'L',
+        'F' : 'D',
+        'b' : 'u',
+        'f' : 'd',
+        'B' : 'U'
+    },
+    'f' : {
+        'U' : 'R',
+        'd' : 'l',
+        'u' : 'r',
+        'D' : 'L',
+        'R' : 'D',
+        'l' : 'u',
+        'r' : 'd',
+        'L' : 'U',
+        'F' : 'F',
+        'b' : 'b',
+        'f' : 'f',
+        'B' : 'B'
+    },
+    'B' : {
+        'U' : 'R',
+        'd' : 'l',
+        'u' : 'r',
+        'D' : 'L',
+        'R' : 'D',
+        'l' : 'u',
+        'r' : 'd',
+        'L' : 'U',
+        'F' : 'F',
+        'b' : 'b',
+        'f' : 'f',
+        'B' : 'B'
+    },
+    'F' : {
+        'U' : 'L',
+        'd' : 'r',
+        'u' : 'l',
+        'D' : 'R',
+        'R' : 'U',
+        'l' : 'd',
+        'r' : 'u',
+        'L' : 'D',
+        'F' : 'F',
+        'b' : 'b',
+        'f' : 'f',
+        'B' : 'B'
+    },
+    'b' : {
+        'U' : 'L',
+        'd' : 'r',
+        'u' : 'l',
+        'D' : 'R',
+        'R' : 'U',
+        'l' : 'd',
+        'r' : 'u',
+        'L' : 'D',
+        'F' : 'F',
+        'b' : 'b',
+        'f' : 'f',
+        'B' : 'B'
+    },
+}
+
+def translateMove(tranform: str, moves: str):
+    result = list(moves)
+    for t in tranform[::-1]:
+        for i in range(len(result)): 
+            result[i] = translate[t][result[i]]
+    a = int()
+    return ''.join(result)
