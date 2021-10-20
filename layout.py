@@ -109,7 +109,8 @@ class RubikCube:
         start = time.time()
         goal = A_star(deepcopy(self.rubik), mode)
         end = time.time()
-        return goal, start - end
+        if goal is None: return None
+        return goal[0], goal[1], goal[2], start - end
 
     def nextStep(self, move):
         self.rubik.moves(move)
@@ -119,6 +120,12 @@ class RubikCube:
         self.rubik = Rubik()
         self.rubik.moves(move)
         self.get_face_color()
+
+    def loadColor(self, color):
+        if not self.rubik.loadColor(color):
+            return False
+        self.get_face_color()
+        return True
 
 class my3DCanvas(FigureCanvas):
     '''Ultimately, this is a QWidget (as well as a FigureCanvasAgg, etc.).'''
@@ -410,98 +417,122 @@ class Ui_MainWindow(object):
         self.button_F = QtWidgets.QPushButton(self.rubik_2D)
         self.button_F.setGeometry(QtCore.QRect(130, 110, 40, 40))
         self.button_F.clicked.connect(lambda: self.applyColor(self.button_F, 2, 2))
+        self.button_F.setObjectName("button_F")
 
         self.button_Z = QtWidgets.QPushButton(self.rubik_2D)
         self.button_Z.setGeometry(QtCore.QRect(90, 230, 40, 40))
         self.button_Z.clicked.connect(lambda: self.applyColor(self.button_Z, 7, 0))
+        self.button_Z.setObjectName("button_Z")
 
         self.button_V = QtWidgets.QPushButton(self.rubik_2D)
         self.button_V.setGeometry(QtCore.QRect(130, 190, 40, 40))
         self.button_V.clicked.connect(lambda: self.applyColor(self.button_V, 5, 0))
+        self.button_V.setObjectName("button_V")
 
         self.button_A = QtWidgets.QPushButton(self.rubik_2D)
         self.button_A.setGeometry(QtCore.QRect(90, 30, 40, 40))
         self.button_A.clicked.connect(lambda: self.applyColor(self.button_A, 0, 0))
+        self.button_A.setObjectName("button_A")
 
         self.button_M = QtWidgets.QPushButton(self.rubik_2D)
         self.button_M.setGeometry(QtCore.QRect(250, 110, 40, 40))
         self.button_M.clicked.connect(lambda: self.applyColor(self.button_M, 1, 1))
+        self.button_M.setObjectName("button_M")
 
         self.button_B = QtWidgets.QPushButton(self.rubik_2D)
         self.button_B.setGeometry(QtCore.QRect(130, 30, 40, 40))
         self.button_B.clicked.connect(lambda: self.applyColor(self.button_B, 1, 0))
+        self.button_B.setObjectName("button_B")
 
         self.button_K = QtWidgets.QPushButton(self.rubik_2D)
         self.button_K.setGeometry(QtCore.QRect(210, 150, 40, 40))
         self.button_K.clicked.connect(lambda: self.applyColor(self.button_K, 6, 1))
+        self.button_K.setObjectName("button_K")
 
         self.button_O = QtWidgets.QPushButton(self.rubik_2D)
         self.button_O.setGeometry(QtCore.QRect(290, 150, 40, 40))
         self.button_O.clicked.connect(lambda: self.applyColor(self.button_O, 7, 1))
+        self.button_O.setObjectName("button_O")
 
         self.button_Q = QtWidgets.QPushButton(self.rubik_2D)
         self.button_Q.setGeometry(QtCore.QRect(10, 110, 40, 40))
         self.button_Q.clicked.connect(lambda: self.applyColor(self.button_Q, 0, 1))
+        self.button_Q.setObjectName("button_Q")
 
         self.button_G = QtWidgets.QPushButton(self.rubik_2D)
         self.button_G.setGeometry(QtCore.QRect(130, 150, 40, 40))
         self.button_G.clicked.connect(lambda: self.applyColor(self.button_G, 5, 1))
+        self.button_G.setObjectName("button_G")
 
         self.button_L = QtWidgets.QPushButton(self.rubik_2D)
         self.button_L.setGeometry(QtCore.QRect(170, 150, 40, 40))
         self.button_L.clicked.connect(lambda: self.applyColor(self.button_L, 5, 2))
+        self.button_L.setObjectName("button_L")
 
         self.button_N = QtWidgets.QPushButton(self.rubik_2D)
         self.button_N.setGeometry(QtCore.QRect(290, 110, 40, 40))
         self.button_N.clicked.connect(lambda: self.applyColor(self.button_N, 0, 2))
+        self.button_N.setObjectName("button_N")
 
         self.button_E = QtWidgets.QPushButton(self.rubik_2D)
         self.button_E.setGeometry(QtCore.QRect(90, 110, 40, 40))
         self.button_E.clicked.connect(lambda: self.applyColor(self.button_E, 3, 1))
+        self.button_E.setObjectName("button_E")
 
         self.button_J = QtWidgets.QPushButton(self.rubik_2D)
         self.button_J.setGeometry(QtCore.QRect(210, 110, 40, 40))
         self.button_J.clicked.connect(lambda: self.applyColor(self.button_J, 1, 2))
+        self.button_J.setObjectName("button_J")
 
         self.button_T = QtWidgets.QPushButton(self.rubik_2D)
         self.button_T.setGeometry(QtCore.QRect(10, 150, 40, 40))
         self.button_T.clicked.connect(lambda: self.applyColor(self.button_T, 7, 2))
+        self.button_T.setObjectName("button_T")
 
         self.button_H = QtWidgets.QPushButton(self.rubik_2D)
         self.button_H.setGeometry(QtCore.QRect(90, 150, 40, 40))
         self.button_H.clicked.connect(lambda: self.applyColor(self.button_H, 4, 2))
+        self.button_H.setObjectName("button_H")
 
         self.button_W = QtWidgets.QPushButton(self.rubik_2D)
         self.button_W.setGeometry(QtCore.QRect(130, 230, 40, 40))
         self.button_W.clicked.connect(lambda: self.applyColor(self.button_W, 6, 0))
+        self.button_W.setObjectName("button_W")
 
         self.button_U = QtWidgets.QPushButton(self.rubik_2D)
         self.button_U.setGeometry(QtCore.QRect(90, 190, 40, 40))
         self.button_U.clicked.connect(lambda: self.applyColor(self.button_U, 4, 0))
+        self.button_U.setObjectName("button_U")
 
         self.button_D = QtWidgets.QPushButton(self.rubik_2D)
         self.button_D.setGeometry(QtCore.QRect(90, 70, 40, 40))
         self.button_D.clicked.connect(lambda: self.applyColor(self.button_D, 3, 0))
+        self.button_D.setObjectName("button_D")
 
         self.button_I = QtWidgets.QPushButton(self.rubik_2D)
         self.button_I.setGeometry(QtCore.QRect(170, 110, 40, 40))
         self.button_I.clicked.connect(lambda: self.applyColor(self.button_I, 2, 1))
+        self.button_I.setObjectName("button_I")
 
         self.button_R = QtWidgets.QPushButton(self.rubik_2D)
         self.button_R.setGeometry(QtCore.QRect(50, 110, 40, 40))
+        self.button_R.clicked.connect(lambda: self.applyColor(self.button_R, 3, 2))
+        self.button_R.setObjectName("button_R")
 
         self.button_C = QtWidgets.QPushButton(self.rubik_2D)
         self.button_C.setGeometry(QtCore.QRect(130, 70, 40, 40))
         self.button_C.clicked.connect(lambda: self.applyColor(self.button_C, 2, 0))
+        self.button_C.setObjectName("button_C")
 
         self.button_P = QtWidgets.QPushButton(self.rubik_2D)
         self.button_P.setGeometry(QtCore.QRect(250, 150, 40, 40))
         self.button_P.clicked.connect(lambda: self.applyColor(self.button_P, 6, 2))
+        self.button_P.setObjectName("button_P")
 
         self.button_S = QtWidgets.QPushButton(self.rubik_2D)
         self.button_S.setGeometry(QtCore.QRect(50, 150, 40, 40))
         self.button_S.clicked.connect(lambda: self.applyColor(self.button_S, 4, 1))
-
+        self.button_S.setObjectName("button_S")
 
         # Add buttons to list rubik buttons
         self.listRubikButton = [self.button_A, self.button_B, self.button_C, self.button_D,
@@ -767,7 +798,10 @@ class Ui_MainWindow(object):
         textRoute = ""
         self.solution = []
         self.currentStep = 0
-        goalState, created, visited, time = self.cube.solve(mode)
+        result = self.cube.solve(mode)
+        if result is None:
+            print("WRONG COLOR")
+        goalState, created, visited, time = result
         for c in goalState.route:
             if c.islower():
                 textRoute += c.upper() + '\''
@@ -789,7 +823,8 @@ class Ui_MainWindow(object):
             self.myMplCanvas.updateMpl(self.cube)
 
     def LoadInputColor(self):
-        print('Input: ', self.posColor)
+        print(self.cube.loadColor(self.posColor))
+        self.myMplCanvas.updateMpl(self.cube)
 
     #TODO: Add Color 2D Rubik
     def applyColor(self, button_pos, x, y):

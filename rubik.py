@@ -3,6 +3,7 @@ from os import pardir
 from queue import Queue
 import json
 import random
+from typing import Coroutine
 '''
         [0] [1]
            U
@@ -76,7 +77,7 @@ class Rubik:
 
                 self.heuristic = sum([DB2[pair[0]][str(pair[1])][str(self.orie[pos_cubes[pair[0]]]*1000 + pos_cubes[pair[0]]*100
                     + self.orie[pos_cubes[pair[1]]]*10 + pos_cubes[pair[1]])] for pair in PAIR_CUBES]) / 6 + len(self.route)
-
+            print(self.heuristic)
         return self.heuristic
 
     # Make the position object hashable, i.e. addable to set()
@@ -164,8 +165,6 @@ class Rubik:
     def b(self):
         self.cube[ULB], self.cube[URB], self.cube[DRB], self.cube[DLB] = self.cube[DLB], self.cube[ULB], self.cube[URB], self.cube[DRB]
         self.orie[ULB], self.orie[URB], self.orie[DRB], self.orie[DLB] = (self.orie[DLB] + 2) % 3, (self.orie[ULB] + 1) % 3, (self.orie[URB] + 2) % 3, (self.orie[DRB] + 1) % 3
-
-    
 
     # Help function - moves multi step
     def moves(self, route: str):
@@ -257,6 +256,23 @@ class Rubik:
         for i in range(n):
             route += S[random.randrange(12)]
         self.moves(route)
+
+    def loadColor(self, color):
+        position = [0]*8
+        orientation = [0]*8
+        for cube in range(8):
+            for pos in range(8):
+                if sorted(color[cube]) == sorted(COLOR[pos]):
+                    position[cube] = pos
+                    for orie in range(3):
+                        if color[cube][0] == COLOR[pos][orie]:
+                            orientation[cube] = orie
+        if sorted(position) == GOAL_POSITION:
+            self.cube = position
+            self.orie = orientation
+            return True
+        return False
+
 
 translate = {
     'u' : {
