@@ -839,21 +839,10 @@ class Ui_MainWindow(object):
             self.currentStep += 1
             self.myMplCanvas.updateMpl(self.cube)
 
-    def countColor(self, c):
-        count = 0
-        for i in self.posColor:
-            for j in i:
-                if c == j:
-                    count += 1
-        print(count)
-        return count
-
     def loadInputColor(self):
-        for c in 'oyrbgw':
-            if (self.countColor(c) != 4):
-                self.alert = QtWidgets.QMessageBox.critical(QtWidgets.QMainWindow(), "Alert", "You chose wrong colors!",
-                                                            buttons=QtWidgets.QMessageBox.Ok)
-                return
+        if (not self.cube.loadColor(self.posColor)):
+            self.alert = QtWidgets.QMessageBox.critical(QtWidgets.QMainWindow(), "Alert", "You chose wrong colors!",
+                                                        buttons=QtWidgets.QMessageBox.Ok)
         print(self.cube.loadColor(self.posColor))
         self.myMplCanvas.updateMpl(self.cube)
 
@@ -913,6 +902,7 @@ class Ui_MainWindow(object):
                                 "border-color: black;")
             button.setText("")
         self.whiteButton.setChecked(True)
+        self.posColor = [['w' for i in range(3)] for j in range(8)]
     
     def setDefaultInputSteps(self):
         self.textBox.setText("")
