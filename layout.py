@@ -392,7 +392,7 @@ class Ui_MainWindow(object):
         "color: black;\n"
         "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(245, 245, 245), stop: 1 rgb(245, 245, 245));")
         self.loadButton.setFlat(False)
-        self.loadButton.clicked.connect(self.printinput)
+        self.loadButton.clicked.connect(self.LoadInputColor)
         self.loadButton.setObjectName("loadButton")
         
         #TODO: Group Rubik 2D (input)
@@ -788,7 +788,7 @@ class Ui_MainWindow(object):
             self.currentStep += 1
             self.myMplCanvas.updateMpl(self.cube)
 
-    def printinput(self):
+    def LoadInputColor(self):
         print('Input: ', self.posColor)
 
     #TODO: Add Color 2D Rubik
