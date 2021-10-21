@@ -1,5 +1,6 @@
 import time
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtCore import*
 import matplotlib
 import matplotlib.pyplot as plt
 matplotlib.use('Qt5Agg')
@@ -737,7 +738,7 @@ class Ui_MainWindow(object):
                                 height=1.9)
         self.nextButton = QtWidgets.QPushButton(self.scrollAreaWidgetContents, text='Next Step')
         self.nextButton.setGeometry(QtCore.QRect(widthBox_3 * 0.8, heightBox_3 * 0.7, 113, 32))
-        self.nextButton.clicked.connect(self.solve_step)
+        self.nextButton.clicked.connect(self.nextStep)
         self.nextButton.setStyleSheet(styleButon)
         self.nextButton.setObjectName('Next Step')
         
@@ -816,7 +817,7 @@ class Ui_MainWindow(object):
         self.cube.randomFace()
         self.myMplCanvas.updateMpl(self.cube)
 
-    def solve_step(self):
+    def nextStep(self):
         if self.currentStep < len(self.solution):
             self.cube.nextStep(self.solution[self.currentStep])
             self.currentStep += 1

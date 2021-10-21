@@ -77,7 +77,6 @@ class Rubik:
 
                 self.heuristic = sum([DB2[pair[0]][str(pair[1])][str(self.orie[pos_cubes[pair[0]]]*1000 + pos_cubes[pair[0]]*100
                     + self.orie[pos_cubes[pair[1]]]*10 + pos_cubes[pair[1]])] for pair in PAIR_CUBES]) / 6 + len(self.route)
-            print(self.heuristic)
         return self.heuristic
 
     # Make the position object hashable, i.e. addable to set()
