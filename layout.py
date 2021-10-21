@@ -734,7 +734,7 @@ class Ui_MainWindow(object):
 
         self.nextButton = QtWidgets.QPushButton(self.scrollAreaWidgetContents, text='Next Step')
         self.nextButton.setGeometry(QtCore.QRect(widthBox_3 * 0.8, heightBox_3 * 0.55, 113, 32))
-        self.nextButton.clicked.connect(self.solve_step)
+        self.nextButton.clicked.connect(self.nextStep)
         self.nextButton.setStyleSheet(styleButton)
         self.nextButton.setObjectName('Next Step')
 
@@ -844,7 +844,6 @@ class Ui_MainWindow(object):
         if (not self.cube.loadColor(self.posColor)):
             self.alert = QtWidgets.QMessageBox.critical(QtWidgets.QMainWindow(), "Alert", "You chose wrong colors!",
                                                         buttons=QtWidgets.QMessageBox.Ok)
-        print(self.cube.loadColor(self.posColor))
         self.myMplCanvas.updateMpl(self.cube)
 
     #TODO: Add Color 2D Rubik

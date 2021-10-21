@@ -265,8 +265,12 @@ class Rubik:
                     position[cube] = pos
                     for orie in range(3):
                         if color[cube][0] == COLOR[pos][orie]:
-                            orientation[cube] = orie
-        if sorted(position) == GOAL_POSITION:
+                            if sorted(color[cube]) == sorted(COLOR[pos]):
+                                orientation[cube] = orie
+                            return False
+        a = sum([o == 1 for o in orientation])
+        b = sum([o == 2 for o in orientation])
+        if sorted(position) == GOAL_POSITION and abs(a - b) % 3 == 0 :
             self.cube = position
             self.orie = orientation
             return True

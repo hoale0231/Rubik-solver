@@ -10,7 +10,7 @@ from rubik import Rubik, PAIR_CUBES, translateMove
 def A_star(initState: Rubik, mode = 2, transform = True): 
     Rubik.mode = mode
     routeTranform = ""
-    if transform: routeTranform = initState.transformToStandard()
+    routeTranform = initState.transformToStandard()
     stateQueue = PriorityQueue()
     visited = set()
     stateQueue.put(initState)
@@ -25,7 +25,7 @@ def A_star(initState: Rubik, mode = 2, transform = True):
             cnt += 1
             if nextState not in visited:
                 if nextState.isGoalState():
-                    if transform: nextState.route = translateMove(routeTranform, nextState.route)
+                    nextState.route = translateMove(routeTranform, nextState.route)
                     return nextState, cnt, len(visited)
                 stateQueue.put(nextState)
                 visited.add(nextState) 
