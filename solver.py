@@ -4,12 +4,14 @@ import random
 import json
 from rubik import Rubik, PAIR_CUBES, translateMove
 
-def A_star(initState: Rubik, mode = 2, transform = True): 
+# Queue = BFS
+# PriorityQueue = A_Star
+def A_star(initState: Rubik, mode = 2, transform = True, queue = PriorityQueue): 
     Rubik.mode = mode
     routeTranform = ""
     if transform: 
         routeTranform = initState.transformToStandard()
-    stateQueue = PriorityQueue()
+    stateQueue = queue()
     visited = set()
     stateQueue.put(initState)
     visited.add(initState)
@@ -164,4 +166,4 @@ def run1(str, mode, transform):
 
 if __name__ == '__main__':
     run1("DrUFDRLrfuDFu", 2, True)
-    run1("DrUFDRLrfuDFu", 2, False)
+    run1("DrUFDRLrfuDFu", 1, False)
