@@ -739,6 +739,73 @@ class Ui_MainWindow(object):
         self.nextButton.setStyleSheet(styleButton)
         self.nextButton.setObjectName('Next Step')
 
+        styleStepButton = 'border-radius: 10px; \
+                        background-color: rgb(255, 0, 0);' 
+
+        self.step_1 = QtWidgets.QPushButton(self.scrollAreaWidgetContents)
+        self.step_1.setGeometry(QtCore.QRect(140, heightBox_3 * 0.45, 57, 5))
+        self.step_1.setStyleSheet(styleStepButton)
+        self.step_1.setObjectName('Step 1')
+
+        self.step_2 = QtWidgets.QPushButton(self.scrollAreaWidgetContents)
+        self.step_2.setGeometry(QtCore.QRect(201, heightBox_3 * 0.45, 57, 5))
+        self.step_2.setStyleSheet(styleStepButton)
+        self.step_2.setObjectName('Step 2')
+
+        self.step_3 = QtWidgets.QPushButton(self.scrollAreaWidgetContents)
+        self.step_3.setGeometry(QtCore.QRect(262, heightBox_3 * 0.45, 57, 5))
+        self.step_3.setStyleSheet(styleStepButton)
+        self.step_3.setObjectName('Step 3')
+
+        self.step_4 = QtWidgets.QPushButton(self.scrollAreaWidgetContents)
+        self.step_4.setGeometry(QtCore.QRect(323, heightBox_3 * 0.45, 57, 5))
+        self.step_4.setStyleSheet(styleStepButton)
+        self.step_4.setObjectName('Step 4')
+
+        self.step_5 = QtWidgets.QPushButton(self.scrollAreaWidgetContents)
+        self.step_5.setGeometry(QtCore.QRect(384, heightBox_3 * 0.45, 57, 5))
+        self.step_5.setStyleSheet(styleStepButton)
+        self.step_5.setObjectName('Step 5')
+
+        self.step_6 = QtWidgets.QPushButton(self.scrollAreaWidgetContents)
+        self.step_6.setGeometry(QtCore.QRect(445, heightBox_3 * 0.45, 57, 5))
+        self.step_6.setStyleSheet(styleStepButton)
+        self.step_6.setObjectName('Step 6')
+
+        self.step_7 = QtWidgets.QPushButton(self.scrollAreaWidgetContents)
+        self.step_7.setGeometry(QtCore.QRect(506, heightBox_3 * 0.45, 57, 5))
+        self.step_7.setStyleSheet(styleStepButton)
+        self.step_7.setObjectName('Step 7')
+
+        self.step_8 = QtWidgets.QPushButton(self.scrollAreaWidgetContents)
+        self.step_8.setGeometry(QtCore.QRect(567, heightBox_3 * 0.45, 57, 5))
+        self.step_8.setStyleSheet(styleStepButton)
+        self.step_8.setObjectName('Step 8')
+
+        self.step_9 = QtWidgets.QPushButton(self.scrollAreaWidgetContents)
+        self.step_9.setGeometry(QtCore.QRect(628, heightBox_3 * 0.45, 57, 5))
+        self.step_9.setStyleSheet(styleStepButton)
+        self.step_9.setObjectName('Step 9')
+
+        self.step_10 = QtWidgets.QPushButton(self.scrollAreaWidgetContents)
+        self.step_10.setGeometry(QtCore.QRect(689, heightBox_3 * 0.45, 57, 5))
+        self.step_10.setStyleSheet(styleStepButton)
+        self.step_10.setObjectName('Step 10')
+
+        self.step_11 = QtWidgets.QPushButton(self.scrollAreaWidgetContents)
+        self.step_11.setGeometry(QtCore.QRect(750, heightBox_3 * 0.45, 57, 5))
+        self.step_11.setStyleSheet(styleStepButton)
+        self.step_11.setObjectName('Step 11')
+
+        self.step_12 = QtWidgets.QPushButton(self.scrollAreaWidgetContents)
+        self.step_12.setGeometry(QtCore.QRect(811, heightBox_3 * 0.45, 57, 5))
+        self.step_12.setStyleSheet(styleStepButton)
+        self.step_12.setObjectName('Step 12')
+
+        self.listNextStepButton = [self.step_1, self.step_2, self.step_3, self.step_4,
+                                    self.step_5, self.step_6, self.step_7, self.step_8,
+                                    self.step_9, self.step_10, self.step_11, self.step_12]
+
         self.groupBox_statistic = QtWidgets.QGroupBox(self.groupBox_3)
         self.groupBox_statistic.setGeometry(QtCore.QRect(30, heightBox_3 * 0.6 + 30, widthBox_3 * 0.5, heightBox_3 * 0.2))
         font = QtGui.QFont()
@@ -768,8 +835,7 @@ class Ui_MainWindow(object):
         self.NameProject.setFont(font)
         self.NameProject.setLayoutDirection(QtCore.Qt.LeftToRight)
         self.NameProject.setAutoFillBackground(False)
-        self.NameProject.setStyleSheet("color: rgb(76, 76, 76);\n"
-                                        "color: rgb(255, 0, 0);")
+        self.NameProject.setStyleSheet("color: rgb(255, 0, 0);")
         self.NameProject.setTextFormat(QtCore.Qt.RichText)
         self.NameProject.setAlignment(QtCore.Qt.AlignCenter)
         self.NameProject.setObjectName("NameProject")
@@ -805,6 +871,7 @@ class Ui_MainWindow(object):
         self.myMplCanvas.updateMpl(self.cube)
         self.my2DCanvas.textOutput("")
         self.label.setText("")
+        self.hideStepButton()
         self.hideInputSteps()
         self.hideInputColors()
     
@@ -812,6 +879,7 @@ class Ui_MainWindow(object):
         textRoute = ""
         self.solution = []
         self.currentStep = 0
+        self.hideStepButton()
         result = self.cube.solve(mode)
         if result is None:
             print("WRONG COLOR")
@@ -838,6 +906,7 @@ class Ui_MainWindow(object):
     def nextStep(self):
         if self.currentStep < len(self.solution):
             self.cube.nextStep(self.solution[self.currentStep])
+            self.nextStepButton(self.currentStep)
             self.currentStep += 1
             self.myMplCanvas.updateMpl(self.cube)
 
@@ -893,6 +962,36 @@ class Ui_MainWindow(object):
             self.posColor[x][y] = 'w'
         else:
             print('Not Found')
+
+    def nextStepButton(self, mode):
+        if mode == 0:
+            self.step_1.show()
+        elif mode == 1:
+            self.step_2.show()
+        elif mode == 2:
+            self.step_3.show()
+        elif mode == 3:
+            self.step_4.show()
+        elif mode == 4:
+            self.step_5.show()
+        elif mode == 5:
+            self.step_6.show()
+        elif mode == 6:
+            self.step_7.show()
+        elif mode == 7:
+            self.step_8.show()
+        elif mode == 8:
+            self.step_9.show()
+        elif mode == 9:
+            self.step_10.show()
+        elif mode == 10:
+            self.step_11.show()
+        else:
+            self.step_12.show()
+
+    def hideStepButton(self):
+        for button in self.listNextStepButton:
+            button.hide()
 
     def setDefaultInputColors(self):
         for button in self.listRubikButton:
