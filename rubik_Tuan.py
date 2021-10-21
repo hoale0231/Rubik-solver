@@ -289,7 +289,7 @@ class Chromosome:
 
 def GeneticAlgo(rubik : Rubik):
     # Configuration
-    moves = "UDRLFBudrlfbN"
+    moves = "URFurfN"
     num_moves = len(moves)
     num_moves_goal = 30
     num_pop = 100

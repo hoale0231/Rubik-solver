@@ -106,8 +106,9 @@ class RubikCube:
         self.get_face_color()
 
     def solve(self, mode):
+        temp = deepcopy(self.rubik)
         start = time.time()
-        goal = A_star(deepcopy(self.rubik), mode)
+        goal = A_star(temp, mode)
         end = time.time()
         if goal is None: return None
         return goal[0], goal[1], goal[2], end - start

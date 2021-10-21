@@ -2,15 +2,13 @@ from time import time
 from queue import Queue, PriorityQueue
 import random
 import json
-#from rubik import Rubik
 from rubik import Rubik, PAIR_CUBES, translateMove
-# Pattern database, support heuristic function
-
 
 def A_star(initState: Rubik, mode = 2, transform = True): 
     Rubik.mode = mode
     routeTranform = ""
-    routeTranform = initState.transformToStandard()
+    if transform: 
+        routeTranform = initState.transformToStandard()
     stateQueue = PriorityQueue()
     visited = set()
     stateQueue.put(initState)
@@ -21,11 +19,12 @@ def A_star(initState: Rubik, mode = 2, transform = True):
         return initState, len(visited), cnt
     while not stateQueue.empty():
         state: Rubik = stateQueue.get() 
-        for nextState in state.getChildStates():
+        for nextState in (state.getChildStates() if transform else state.getFullChild()):
             cnt += 1
             if nextState not in visited:
                 if nextState.isGoalState():
-                    nextState.route = translateMove(routeTranform, nextState.route)
+                    if transform:
+                         nextState.route = translateMove(routeTranform, nextState.route)
                     return nextState, cnt, len(visited)
                 stateQueue.put(nextState)
                 visited.add(nextState) 
@@ -148,11 +147,11 @@ def runN(n):
     print("Case:", caseMax)
 
 # Try once with route designation
-def run1(str, mode):
+def run1(str, mode, transform):
     init = Rubik()
     init.moves(str)
     s = time()
-    goal, nodeCreated, nodeVisited = A_star(init, mode)
+    goal, nodeCreated, nodeVisited = A_star(init, mode, transform)
     print(goal.getHeuristic())
     e = time()
     print(e-s)
@@ -164,8 +163,5 @@ def run1(str, mode):
 
 
 if __name__ == '__main__':
-    run1("DrUFDRLrfuDFu", mode=3)
-    #runN(50)
-    #createDB2()
-    #init = Rubik()
-    #print(init.getHeuristic())
+    run1("DrUFDRLrfuDFu", 2, True)
+    run1("DrUFDRLrfuDFu", 2, False)
