@@ -3,7 +3,7 @@ from os import pardir
 from queue import Queue
 import json
 import random
-from typing import Coroutine
+
 '''
         [0] [1]
            U
@@ -267,7 +267,8 @@ class Rubik:
                         if color[cube][0] == COLOR[pos][orie]:
                             if sorted(color[cube]) == sorted(COLOR[pos]):
                                 orientation[cube] = orie
-                            return False
+                            else:
+                                return False
         a = sum([o == 1 for o in orientation])
         b = sum([o == 2 for o in orientation])
         if sorted(position) == GOAL_POSITION and abs(a - b) % 3 == 0 :
