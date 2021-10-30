@@ -4,9 +4,15 @@ import random
 import json
 from rubik import Rubik, PAIR_CUBES, translateMove
 
+
+#import timeout library
+from func_timeout import func_timeout, FunctionTimedOut
+
 # Queue = BFS
 # PriorityQueue = A_Star
-def A_star(initState: Rubik, mode = 2, transform = True, queue = PriorityQueue): 
+# bridge = Event()
+
+def A_star(initState: Rubik, mode = 0, transform = True, queue = PriorityQueue): 
     Rubik.mode = mode
     routeTranform = ""
     if transform: 
@@ -29,7 +35,9 @@ def A_star(initState: Rubik, mode = 2, transform = True, queue = PriorityQueue):
                          nextState.route = translateMove(routeTranform, nextState.route)
                     return nextState, cnt, len(visited)
                 stateQueue.put(nextState)
-                visited.add(nextState) 
+                visited.add(nextState)
+                # if bridge.is_set():
+                #     break
     return None
 
 # Use to calc heuristic value
@@ -51,7 +59,6 @@ def BFS(initState: Rubik, index):
                 visited.add(nextState) 
     return None
 
-# Use to calc heuristic value
 def BFS2(initState: Rubik, index1, index2): 
     stateQueue = Queue()
     visited = set()
@@ -70,7 +77,7 @@ def BFS2(initState: Rubik, index1, index2):
                 visited.add(nextState) 
     return None
 
-# Create pattern database H2
+# Create pattern database
 def creatDB1():
     db = []
     for i in range(8):
@@ -86,7 +93,7 @@ def creatDB1():
                 db[i][o * 10 + p] = len(BFS(init, i).route)
     json.dump(db, open('db2.json', 'w'))
 
-# Create pattern database H3
+
 def createDB2():
     db = [{} for _ in range(7)]
     for c in PAIR_CUBES:
@@ -110,7 +117,6 @@ def createDB2():
 
     json.dump(db, open('dbPair.json', 'w'))
 
-
 # Use to test algorithm
 def randomMove(n):
     S = "UuDdRrLlFfBb"
@@ -119,13 +125,20 @@ def randomMove(n):
         s += S[random.randrange(12)]
     return s
 
+# make a list of random testcase
+randomlist= list()
+for i in range(20):
+    shuff = randomMove(50)
+    randomlist.append(shuff)
+print(randomlist)
+
 # Randomly run N times
-def runN(n):
+def runN(n, mode, transform, queue):
     maxStep = 0
     caseMax = ""
     for i in range(n):
         init = Rubik()
-        shuffle = randomMove(i)
+        shuffle = randomlist[i]
 
         print("===========================")
         print("N move:", i)
@@ -133,17 +146,22 @@ def runN(n):
         init.moves(shuffle)
         #init.transformToStandard()
         s = time()
-        goal, nodeCreated, nodeVisited = A_star(init)
+        # set timeout 300s = 5 minute
+        try:
+            goal, nodeCreated, nodeVisited = func_timeout(300, A_star, args=(init, mode, transform, queue))
+        except FunctionTimedOut:
+            continue
+        # goal, nodeCreated, nodeVisited = A_star(init, mode, transform, queue)
         e = time()
-       
         if len(goal.route) > maxStep:
             maxStep = len(goal.route)
             caseMax = shuffle
-
+        # memUsed = psutil.Process().memory_info().rss
         print("Time:", e - s)
         print("Steps:", len(goal.route))
         print("Node visited", nodeVisited)
         print("Node created:", nodeCreated)
+        # print("Memory: "+ str(memUsed/(1024*1024))+ " MB")
         print(goal.route)
 
     print("Max step:", maxStep)
@@ -166,5 +184,35 @@ def run1(str, mode, transform):
 
 
 if __name__ == '__main__':
-    run1("DrUFDRLrfuDFu", 2, True)
-    run1("DrUFDRLrfuDFu", 1, False)
+    # main_thread= Thread(target=A_star)
+    # main_thread.start()
+    # main_thread.join(timeout=300)
+    # bridge.set()
+
+    #A* + h1 + improved
+    runN(20, 0, True, PriorityQueue)
+    print("end 1 test")
+
+    #A* + h1 +  not improved
+    runN(20, 0, False, PriorityQueue)
+    print("end 2 test")
+
+    #A* + h2 + improved
+    runN(20, 1, True, PriorityQueue)
+    print("end 3 test")
+
+    #A* + h2 + not improved
+    runN(20, 1, False, PriorityQueue)
+    print("end 4 test")
+
+    #A* + h3 + improved
+    runN(20, 2, True, PriorityQueue)
+    print("end 5 test")
+
+    #A* + h3 + not improved
+    runN(20, 2, False, PriorityQueue)
+    print("end 6 test")
+
+    #BFS + improved
+    runN(20, 0, True, Queue)
+    print("end all test")
