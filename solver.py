@@ -51,6 +51,7 @@ def BFS(initState: Rubik, index):
                 visited.add(nextState) 
     return None
 
+# Use to calc heuristic value
 def BFS2(initState: Rubik, index1, index2): 
     stateQueue = Queue()
     visited = set()
@@ -69,7 +70,7 @@ def BFS2(initState: Rubik, index1, index2):
                 visited.add(nextState) 
     return None
 
-# Create pattern database
+# Create pattern database H2
 def creatDB1():
     db = []
     for i in range(8):
@@ -85,7 +86,7 @@ def creatDB1():
                 db[i][o * 10 + p] = len(BFS(init, i).route)
     json.dump(db, open('db2.json', 'w'))
 
-
+# Create pattern database H3
 def createDB2():
     db = [{} for _ in range(7)]
     for c in PAIR_CUBES:
