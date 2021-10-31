@@ -4,14 +4,16 @@ import random
 import json
 from rubik import Rubik, PAIR_CUBES, translateMove
 
-
 #import timeout library
 from func_timeout import func_timeout, FunctionTimedOut
 
 # Queue = BFS
 # PriorityQueue = A_Star
-# bridge = Event()
-
+# H1: mode = 0
+# H2: mode = 1
+# H3: mode = 2
+# Improve: transform = True
+# Not Improve: transform = False
 def A_star(initState: Rubik, mode = 0, transform = True, queue = PriorityQueue): 
     Rubik.mode = mode
     routeTranform = ""
@@ -36,11 +38,9 @@ def A_star(initState: Rubik, mode = 0, transform = True, queue = PriorityQueue):
                     return nextState, cnt, len(visited)
                 stateQueue.put(nextState)
                 visited.add(nextState)
-                # if bridge.is_set():
-                #     break
     return None
 
-# Use to calc heuristic value
+# Use to calc heuristic value H2 
 def BFS(initState: Rubik, index): 
     stateQueue = Queue()
     visited = set()
@@ -59,6 +59,7 @@ def BFS(initState: Rubik, index):
                 visited.add(nextState) 
     return None
 
+# Use to calc heuristic value H3
 def BFS2(initState: Rubik, index1, index2): 
     stateQueue = Queue()
     visited = set()
@@ -77,7 +78,7 @@ def BFS2(initState: Rubik, index1, index2):
                 visited.add(nextState) 
     return None
 
-# Create pattern database
+# Create pattern database H2
 def creatDB1():
     db = []
     for i in range(8):
@@ -93,7 +94,7 @@ def creatDB1():
                 db[i][o * 10 + p] = len(BFS(init, i).route)
     json.dump(db, open('db2.json', 'w'))
 
-
+# Create pattern database H3 
 def createDB2():
     db = [{} for _ in range(7)]
     for c in PAIR_CUBES:
@@ -144,7 +145,7 @@ def runN(n, mode, transform, queue):
         print("N move:", i)
         print(shuffle)
         init.moves(shuffle)
-        #init.transformToStandard()
+
         s = time()
         # set timeout 300s = 5 minute
         try:
@@ -153,6 +154,7 @@ def runN(n, mode, transform, queue):
             continue
         # goal, nodeCreated, nodeVisited = A_star(init, mode, transform, queue)
         e = time()
+
         if len(goal.route) > maxStep:
             maxStep = len(goal.route)
             caseMax = shuffle
@@ -182,14 +184,8 @@ def run1(str, mode, transform):
     print(goal.route)
     #init.printEachStep(goal.route)
 
-
 if __name__ == '__main__':
-    # main_thread= Thread(target=A_star)
-    # main_thread.start()
-    # main_thread.join(timeout=300)
-    # bridge.set()
-
-    #A* + h1 + improved
+      #A* + h1 + improved
     runN(20, 0, True, PriorityQueue)
     print("end 1 test")
 

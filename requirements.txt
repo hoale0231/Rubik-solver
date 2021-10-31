@@ -1,0 +1,5 @@
+json
+PyQt5
+matplotlib
+numpy
+mpl_toolkits
