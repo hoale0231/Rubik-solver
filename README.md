@@ -17,3 +17,8 @@ $ pip install -r requirements.txt
 $ python app.py
 ```
 <b><u>Or just double click file **rubikSolver.exe**</u></b>
+
+## UI
+
+![](images/UI1.png)
+![](images/UI2.png)
