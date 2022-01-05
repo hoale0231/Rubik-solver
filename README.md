@@ -20,5 +20,5 @@ $ python app.py
 
 ## UI
 
-![](images/UI1.png)
-![](images/UI2.png)
+![](Images/UI1.png)
+![](Images/UI2.png)
